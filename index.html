@@ -91,7 +91,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
   </div>
   <div class="row"><input type="date" id="fDate"><select id="fSubj"></select><button id="fClear">清除篩選</button><span class="muted">每日 ≥ 15 分鐘即達標</span></div>
   <div class="dist" id="dist"></div>
-  <div class="scroll"><thead><tr><th>日期</th><th>科目</th><th>項目</th><th>分鐘</th><th>收益</th><th></th></tr></thead><tbody id="hist"></tbody></table></div>
+  <div class="scroll"><table><thead><tr><th>日期</th><th>科目</th><th>項目</th><th>分鐘</th><th>收益</th><th></th></tr></thead><tbody id="hist"></tbody></table></div>
 </section>
 
 <section class="g2">
@@ -109,7 +109,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-const KEY='kftb.v2', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
+const KEY='kftb.v3', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
 const QUICK=[['15 分鐘微保底',15,15],['25 分鐘番茄鐘',25,25],['30分鐘番茄鐘',30,30],['45分鐘番茄鐘',45,45],['60分鐘番茄鐘',60,60]];
 let S, mode=15, left=900, run=false, endAt=0, tmr=null, charts={};
 const $=id=>document.getElementById(id);
@@ -145,7 +145,8 @@ function tick(){left=Math.max(0,Math.round((endAt-Date.now())/1000));showClock()
   if(left<=0){clearInterval(tmr);run=false;beep();const amt=mode==15?75:150;
    addRecord($('subj').value,mode,amt,mode==15?'微型保底（計時）':'番茄鐘（計時）');toast('🎉 完成！+NT$ '+amt+' 已入帳');left=mode*60;showClock()}}
 $('tStart').onclick=()=>{if(run||left<=0)return;run=true;endAt=Date.now()+left*1000;tmr=setInterval(tick,250)};
-$('tPause').onclick=()=>{if(!run)return;clearInterval(tmr);run=false;tick()};$('tReset').onclick=()=>{clearInterval(tmr);run=false;left=mode*60;showClock()};
+$('tPause').onclick=()=>{if(!run)return;clearInterval(tmr);run=false;tick()};
+$('tReset').onclick=()=>{clearInterval(tmr);run=false;left=mode*60;showClock()};
 document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
 
 /* Controls */
@@ -154,8 +155,60 @@ $('quick').onclick=e=>{const b=e.target.closest('button');if(!b)return;const q=Q
 const opts=SUBJ.map(s=>`<option>${s}</option>`).join('');
 $('subj').innerHTML=opts;$('fSubj').innerHTML='<option value="">全部科目</option>'+opts;
 $('fDate').onchange=$('fSubj').onchange=renderHist;
-$('fClear').onclick=()=>{$('fDate').value='';$('fSubj').value='';renderHist()};$('hist').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;S.records=S.records.filter(r=>r.id!==b.dataset.del);save();render();toast('已刪除紀錄')};
+$('fClear').onclick=()=>{$('fDate').value='';$('fSubj').value='';renderHist()};
+$('hist').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;S.records=S.records.filter(r=>r.id!==b.dataset.del);save();render();toast('已刪除紀錄')};
 
 /* Store */
 $('rAdd').onclick=()=>{const n=$('rName').value.trim(),c=+$('rCost').value;if(!n||!(c>0)){toast('請輸入名稱與金幣');return}
-  S.rewards.push({id:uid(),name:n,cost:c});save
+  S.rewards.push({id:uid(),name:n,cost:c});save();$('rName').value=$('rCost').value='';render();toast('已新增獎勵卡片')};
+$('store').onclick=e=>{const d=e.target.closest('[data-del]'),b=e.target.closest('[data-buy]');
+  if(d){S.rewards=S.rewards.filter(r=>r.id!==d.dataset.del);save();render();return}
+  if(b){const r=S.rewards.find(x=>x.id===b.dataset.buy);if(!r||balance()<r.cost)return;
+   S.redeems.push({id:uid(),date:today(),name:r.name,cost:r.cost,ts:Date.now()});save();render();toast('兌換成功：'+r.name)}};
+
+/* Render */
+function renderStats(){const dm=dayMap(),t=today(),bal=balance();
+  $('sBal').textContent=fmt(bal);$('sToday').textContent='+'+fmt((dm[t]||{amt:0}).amt);
+  const now=new Date(),dow=(now.getDay()+6)%7,ws=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow);
+  const wk=S.records.filter(r=>r.date>=ymd(ws)).reduce((s,r)=>s+r.minutes,0);$('sWeek').textContent=(wk/60).toFixed(1)+' h';
+  let st=0,d=new Date();if(!(dm[ymd(d)]&&dm[ymd(d)].min>=15))d.setDate(d.getDate()-1);
+  while(dm[ymd(d)]&&dm[ymd(d)].min>=15){st++;d.setDate(d.getDate()-1)}
+  $('stStreak').textContent=st+' 天';
+  const days=S.records.length?Math.max(1,Math.round((new Date(t)-new Date(S.records.reduce((m,r)=>r.date<m?r.date:m,t)))/864e5)+1):0;
+  $('stAvg').textContent=(days?S.records.reduce((s,r)=>s+r.minutes,0)/60/days:0).toFixed(2)+' h';
+  const td=dm[t]||{min:0,n:0};$('stDay').textContent=(td.min/60).toFixed(1)+' h';$('stCnt').textContent=td.n}
+function renderHist(){const fd=$('fDate').value,fs=$('fSubj').value;
+  const L=S.records.filter(r=>(!fd||r.date===fd)&&(!fs||r.subject===fs)).sort((a,b)=>b.ts-a.ts);
+  $('hist').innerHTML=L.slice(0,150).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.subject)}</td><td>${esc(r.label||'')}</td><td class="mono">${r.minutes}</td><td class="mono grn">+${fmt(r.amount)}</td><td><button data-del="${r.id}" title="刪除">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">尚無紀錄</td></tr>';
+  const sm={};L.forEach(r=>sm[r.subject]=(sm[r.subject]||0)+r.minutes);const mx=Math.max(1,...Object.values(sm));
+  $('dist').innerHTML=Object.entries(sm).map(([k,v])=>`<div><span>${esc(k)}</span><i style="width:${v/mx*60}%"></i><b class="mono">${(v/60).toFixed(1)}h</b></div>`).join('')}
+function renderStore(){const b=balance();
+  $('store').innerHTML=S.rewards.map(r=>`<div class="item"><button class="x" data-del="${r.id}" title="刪除">✕</button><b>${esc(r.name)}</b><p>犒賞自己，放鬆一下</p><button data-buy="${r.id}" class="${b>=r.cost?'amb':''}" ${b>=r.cost?'':'disabled'}>🪙 ${fmt(r.cost)} 兌換</button></div>`).join('')||'<p class="muted">尚無獎勵卡片</p>';
+  $('rHist').innerHTML=S.redeems.slice().reverse().slice(0,30).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.name)}</td><td class="mono red">−${fmt(r.cost)}</td></tr>`).join('')||'<tr><td class="muted">尚無兌換</td></tr>'}
+function renderCharts(){if(!window.Chart)return;const dm=dayMap(),lab=[],h=[],cum=[],cl=[];
+  let base=0;const start=new Date();start.setDate(start.getDate()-29);const s0=ymd(start);
+  S.records.forEach(r=>{if(r.date<s0)base+=r.amount});let run=base;
+  for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=ymd(d);run+=(dm[k]||{amt:0}).amt;cl.push(k.slice(5));cum.push(run);
+   if(i<14){lab.push(k.slice(5));h.push(+(((dm[k]||{min:0}).min)/60).toFixed(2))}}
+  const opt={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8a9bb0'},grid:{color:'#223040'}},y:{beginAtZero:true,ticks:{color:'#8a9bb0'},grid:{color:'#223040'}}}};
+  const mk=(id,cfg)=>{if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg)};
+  mk('c1',{type:'bar',data:{labels:lab,datasets:[{data:h,backgroundColor:'#10d98a',borderRadius:4}]},options:opt});
+  mk('c2',{type:'line',data:{labels:cl,datasets:[{data:cum,borderColor:'#f5b83d',backgroundColor:'rgba(245,184,61,.15)',fill:true,tension:.3,pointRadius:2}]},options:opt})}
+function render(){renderStats();renderHist();renderStore();renderCharts()}
+
+/* Data */
+function dl(n,t,m){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}catch(e){}}
+$('eJson').onclick=()=>{const t=JSON.stringify(S,null,2);$('box').value=t;dl('kftb-backup.json',t,'application/json');toast('JSON 已產生，可複製保存')};
+$('eCsv').onclick=()=>{const t='date,subject,label,minutes,amount\n'+S.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  $('box').value=t;dl('kftb-records.csv',t,'text/csv');toast('CSV 已產生，可複製保存')};
+$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){try{document.execCommand('copy')}catch(_){}}toast('已複製')};
+function imp(t){try{const o=JSON.parse(t);if(!o||!Array.isArray(o.records)||!Array.isArray(o.redeems)||!Array.isArray(o.rewards))throw 0;
+  S={records:o.records,redeems:o.redeems,rewards:o.rewards};save();render();toast('匯入完成，資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
+$('iBtn').onclick=()=>imp($('box').value);
+$('iFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>imp(r.result);r.readAsText(f);e.target.value=''};
+
+setInterval(()=>{$('clk').textContent=new Date().toLocaleString('zh-TW',{hour12:false})},1000);
+load();showClock();render();
+</script>
+</body>
+</html>
