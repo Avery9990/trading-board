@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>知識期貨交易看板 (雲端同步版)</title>
+<title>知識期貨交易看板 (雙人對戰雲端版)</title>
 <style>
-:root{--bg:#0a0e13;--card:#111821;--card2:#17212c;--line:#223040;--tx:#e8eef5;--mut:#8a9bb0;--g:#10d98a;--a:#f5b83d;--r:#ef5b5b;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#0a0e13;--card:#111821;--card2:#17212c;--line:#223040;--tx:#e8eef5;--mut:#8a9bb0;--g:#10d98a;--a:#f5b83d;--r:#ef5b5b;--p1:#3b82f6;--p2:#ec4899;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 -apple-system,"Segoe UI","Noto Sans TC","PingFang TC",sans-serif}
@@ -18,7 +18,24 @@ h1{font-size:18px;margin:0;letter-spacing:.5px}h1 span{color:var(--g)}
 h2{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mut);margin:0 0 12px;font-weight:600}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.35);transition:border-color .2s,transform .2s}
 .card:hover{border-color:#2f4358}
-.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px}
+.pk-container{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:640px){.pk-container{grid-template-columns:1fr}}
+.pk-card{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.pk-card.p1-card{border-color:rgba(59,130,246,.4)}
+.pk-card.p2-card{border-color:rgba(236,72,153,.4)}
+.pk-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.pk-title{font-size:16px;font-weight:700}
+.p1-card .pk-title{color:var(--p1)}
+.p2-card .pk-title{color:var(--p2)}
+.pk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.pk-grid div{background:var(--card2);padding:8px;border-radius:8px}
+.pk-grid .val{font:700 20px ui-monospace,monospace;margin-top:2px}
+
+.player-switcher{display:flex;gap:10px;margin-bottom:14px;background:var(--card2);padding:6px;border-radius:10px;border:1px solid var(--line)}
+.player-btn{flex:1;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--mut);font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
+.player-btn.active-p1{background:var(--p1);color:#fff}
+.player-btn.active-p2{background:var(--p2);color:#fff}
+
 .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-bottom:12px}
 @media(max-width:420px){.g2{grid-template-columns:1fr}}
 .lbl{font-size:12px;color:var(--mut)}
@@ -35,7 +52,7 @@ button:disabled{opacity:.4;cursor:not-allowed;background:#1a222b}
 .row>*{flex:0 0 auto}.row .grow{flex:1 1 120px}
 .clock{font:700 56px ui-monospace,Menlo,monospace;text-align:center;margin:8px 0;letter-spacing:2px}
 .seg button.on{background:var(--g);color:#04130c;border-color:var(--g);font-weight:700}
-.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
 .qgrid button{text-align:left;padding:10px}.qgrid b{display:block;color:var(--g);font-family:ui-monospace,monospace}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
 .stats div{background:var(--card2);border-radius:8px;padding:8px 10px}.stats b{display:block;font:700 18px ui-monospace,monospace}
@@ -61,36 +78,73 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 <body>
 <div class="wrap">
 <header>
-  <h1>📈 KNOWLEDGE <span>FUTURES</span> TRADING BOARD</h1>
+  <h1>⚔️ 知識期貨 <span>雙人對戰看板</span></h1>
   <div class="row">
     <span class="status-badge" id="cloudStatus">☁️ 雲端同步中...</span>
     <div class="tick" id="clk"></div>
   </div>
 </header>
 
-<section class="g3">
-  <div class="card"><div class="lbl">可用知識金幣 · Available Balance</div><div class="num gold" id="sBal">0</div></div>
-  <div class="card"><div class="lbl">今日收益 · Today’s Earnings</div><div class="num grn" id="sToday">0</div></div>
-  <div class="card"><div class="lbl">本週累積時數 · Weekly Hours</div><div class="num" id="sWeek">0</div></div>
+<!-- 雙人即時資產對戰看板 -->
+<section class="pk-container">
+  <div class="pk-card p1-card">
+    <div class="pk-header">
+      <span class="pk-title" id="p1NameTitle">🟦 玩家 A</span>
+      <span class="muted" id="p1Tag">操作中</span>
+    </div>
+    <div class="pk-grid">
+      <div><span class="lbl">可用金幣</span><div class="val gold" id="p1Bal">0</div></div>
+      <div><span class="lbl">今日收益</span><div class="val grn" id="p1Today">0</div></div>
+      <div><span class="lbl">本週時數</span><div class="val" id="p1Week">0h</div></div>
+    </div>
+  </div>
+
+  <div class="pk-card p2-card">
+    <div class="pk-header">
+      <span class="pk-title" id="p2NameTitle">🟥 玩家 B</span>
+      <span class="muted" id="p2Tag">等待中</span>
+    </div>
+    <div class="pk-grid">
+      <div><span class="lbl">可用金幣</span><div class="val gold" id="p2Bal">0</div></div>
+      <div><span class="lbl">今日收益</span><div class="val grn" id="p2Today">0</div></div>
+      <div><span class="lbl">本週時數</span><div class="val" id="p2Week">0h</div></div>
+    </div>
+  </div>
 </section>
 
+<!-- 玩家切換選擇器 -->
+<div class="player-switcher">
+  <button class="player-btn active-p1" id="btnP1">切換至：🟦 玩家 A 打卡</button>
+  <button class="player-btn" id="btnP2">切換至：🟥 玩家 B 打卡</button>
+</div>
+
 <section class="g2">
-  <div class="card"><h2>專注計時 · Focus Timer</h2>
-    <div class="row seg" id="modes"><button data-m="15" class="on">15 分鐘微型保底</button><button data-m="25">25 分鐘番茄鐘</button></div>
+  <div class="card">
+    <h2>專注計時 · Focus Timer (<span id="curPlayerName">玩家 A</span>)</h2>
+    <div class="row seg" id="modes">
+      <button data-m="15" class="on">15 分鐘</button>
+      <button data-m="25">25 分鐘</button>
+      <button data-m="30">30 分鐘</button>
+      <button data-m="45">45 分鐘</button>
+      <button data-m="60">60 分鐘</button>
+    </div>
     <div class="clock" id="clock">15:00</div>
     <div class="row"><select class="grow" id="subj"></select><button class="pri" id="tStart">開始</button><button id="tPause">暫停</button><button id="tReset">重置</button></div>
-    <p class="muted">計時完成會播放提示音並自動入帳。</p>
-    <h2 style="margin-top:14px">快速記帳 · Quick Deposit</h2>
+    <p class="muted">計時完成會自動發放金幣（1分鐘 = 1金幣）。</p>
+    <h2 style="margin-top:14px">快速切換計時</h2>
     <div class="qgrid" id="quick"></div>
   </div>
-  <div class="card"><h2>知識收益兌換商城 · Reward Store</h2>
+
+  <div class="card">
+    <h2>專屬兌換商城 · Reward Store</h2>
     <div class="store" id="store"></div>
     <div class="row" style="margin-top:12px"><input class="grow" id="rName" placeholder="獎勵名稱"><input id="rCost" type="number" min="1" placeholder="金幣" style="width:90px"><button id="rAdd" class="amb">新增</button></div>
     <h2 style="margin:14px 0 6px">兌換履歷</h2><div class="scroll" style="max-height:130px"><table style="min-width:0"><tbody id="rHist"></tbody></table></div>
   </div>
 </section>
 
-<section class="card" style="margin-bottom:12px"><h2>每日學習紀錄 · Daily Logger</h2>
+<section class="card" style="margin-bottom:12px">
+  <h2>個人學習紀錄 · Logger (<span id="curPlayerName2">玩家 A</span>)</h2>
   <div class="stats">
     <div><span class="lbl">連續達標天數</span><b class="grn" id="stStreak">0</b></div>
     <div><span class="lbl">日平均時數</span><b id="stAvg">0</b></div>
@@ -109,7 +163,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 
 <section class="card"><h2>資料管理 · Data Management</h2>
   <div class="row"><button id="eJson">匯出 JSON</button><button id="eCsv">匯出 CSV</button><label class="row" style="gap:6px"><span class="muted">匯入 JSON：</span><input type="file" id="iFile" accept=".json,application/json"></label></div>
-  <textarea id="box" placeholder="匯出內容會顯示在此（可複製）；也可貼上 JSON 後按「匯入」復原。"></textarea>
+  <textarea id="box" placeholder="匯出內容會顯示在此；也可貼上 JSON 後按「匯入」復原。"></textarea>
   <div class="row" style="margin-top:8px"><button id="copyBtn">複製</button><button id="iBtn" class="amb">匯入貼上的 JSON</button></div>
 </section>
 </div>
@@ -120,19 +174,23 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// 1. 設定 Supabase 帳號資訊 (請將這兩行替換為你在 Supabase 後台取得的 URL 與 Key)
+// Supabase 雲端設定
 const SUPABASE_URL = 'https://qbhoxxurkqozipbdgnqf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_WlIhTc6Lib0F_3G_AJCzIA_7nHCsOg6';
-const USER_ID = 'my_trading_board_main'; // 個人固定的數據識別碼
+const USER_ID = 'dual_trading_board_v1'; // 雙人專屬數據識別碼
 
 let supabaseClient = null;
 if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
   supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
-const KEY='kftb.v3', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
-const QUICK=[['15 分鐘微保底',15,15],['25 分鐘番茄鐘',25,25],['30分鐘番茄鐘',30,30],['45分鐘番茄鐘',45,45],['60分鐘番茄鐘',60,60]];
-let S, mode=15, left=900, run=false, endAt=0, tmr=null, charts={};
+const KEY='kftb.dual.v1', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
+const QUICK=[['15 分鐘',15],['25 分鐘',25],['30 分鐘',30],['45 分鐘',45],['60 分鐘',60]];
+
+// 雙人資料結構
+let D = { cur: 'p1', p1: defData('玩家 A'), p2: defData('玩家 B') };
+let mode=15, left=900, run=false, endAt=0, tmr=null, charts={};
+
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
@@ -141,41 +199,49 @@ const today=()=>ymd(new Date());
 const fmt=n=>Number(n).toLocaleString('en-US');
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
-function defs(){return{records:[],redeems:[],rewards:[
-  {id:'r1',name:'30 分鐘看動漫 / 30 分鐘滑手機',cost:300},
-  {id:'r2',name:'吃零食 / Steam 遊戲(星露谷3天)',cost:1000},
-  {id:'r3',name:'對方做一件我希望的事情 / 出門吃一頓150以下的飯',cost:2000}
-]}}
+function defData(name){
+  return {
+    name: name,
+    records: [],
+    redeems: [],
+    rewards: [
+      {id:'r1',name:'30 分鐘看動漫 / 30 分鐘滑手機',cost:30},
+      {id:'r2',name:'吃零食 / Steam 遊戲',cost:100},
+      {id:'r3',name:'對方做一件我希望的事情 / 出門吃一頓飯',cost:200}
+    ]
+  }
+}
 
-// 讀取本地快取
-function loadLocal(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
-  if(!S||!Array.isArray(S.records))S=defs();}
+// 取得當前操作玩家資料
+function getCur(){ return D[D.cur]; }
 
-// 保存資料：同時寫入本地 LocalStorage 並同步回 Supabase 雲端
+function loadLocal(){
+  try{ const l = JSON.parse(localStorage.getItem(KEY)); if(l && l.p1 && l.p2) D = l; }catch(e){}
+}
+
 async function save(){
-  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  try{ localStorage.setItem(KEY, JSON.stringify(D)); }catch(e){}
   if(supabaseClient){
     $('cloudStatus').textContent = '☁️ 雲端同步中...';
     $('cloudStatus').classList.remove('online');
     try {
-      await supabaseClient.from('user_data').upsert({ id: USER_ID, data: S, updated_at: new Date() });
+      await supabaseClient.from('user_data').upsert({ id: USER_ID, data: D, updated_at: new Date() });
       $('cloudStatus').textContent = '☁️ 雲端已連線';
       $('cloudStatus').classList.add('online');
     } catch(err) {
-      $('cloudStatus').textContent = '⚠️ 同步失敗 (僅離線保存)';
+      $('cloudStatus').textContent = '⚠️ 同步失敗';
     }
   }
 }
 
-// 頁面初次載入：優先從雲端拉取最新資料
 async function initCloudSync(){
   loadLocal();
   render();
   if(supabaseClient){
     try {
-      const { data, error } = await supabaseClient.from('user_data').select('data').eq('id', USER_ID).single();
-      if(data && data.data && Array.isArray(data.data.records)){
-        S = data.data;
+      const { data } = await supabaseClient.from('user_data').select('data').eq('id', USER_ID).single();
+      if(data && data.data && data.data.p1 && data.data.p2){
+        D = data.data;
         saveLocalOnly();
         render();
         $('cloudStatus').textContent = '☁️ 雲端已連線';
@@ -184,89 +250,151 @@ async function initCloudSync(){
     } catch(e) {
       $('cloudStatus').textContent = '⚠️ 離線模式';
     }
-  } else {
-    $('cloudStatus').textContent = '未設定 Supabase Key';
   }
 }
 
-function saveLocalOnly(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function saveLocalOnly(){ try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){} }
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach((d,i)=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=i==2?1046:784;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.2,a.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d+.22);o.start(a.currentTime+d);o.stop(a.currentTime+d+.25)})}catch(e){}}
 
-const earned=()=>S.records.reduce((s,r)=>s+r.amount,0);
-const spent=()=>S.redeems.reduce((s,r)=>s+r.cost,0);
-const balance=()=>earned()-spent();
-function dayMap(){const m={};S.records.forEach(r=>{(m[r.date]=m[r.date]||{min:0,amt:0,n:0});m[r.date].min+=r.minutes;m[r.date].amt+=r.amount;m[r.date].n++});return m}
+function calcPlayerStats(pData){
+  const earned = pData.records.reduce((s,r)=>s+r.amount,0);
+  const spent = pData.redeems.reduce((s,r)=>s+r.cost,0);
+  const bal = earned - spent;
+  const dm = {};
+  pData.records.forEach(r=>{(dm[r.date]=dm[r.date]||{min:0,amt:0});dm[r.date].min+=r.minutes;dm[r.date].amt+=r.amount});
+  const t = today();
+  const todayAmt = (dm[t]||{amt:0}).amt;
+  const now = new Date(), dow=(now.getDay()+6)%7, ws=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow);
+  const wkMin = pData.records.filter(r=>r.date>=ymd(ws)).reduce((s,r)=>s+r.minutes,0);
+  return { bal, todayAmt, wkHours: (wkMin/60).toFixed(1) };
+}
 
 function addRecord(subject,minutes,amount,label){
-  S.records.push({id:uid(),date:today(),subject,minutes,amount,label,ts:Date.now()});save();render();}
+  getCur().records.push({id:uid(),date:today(),subject,minutes,amount,label,ts:Date.now()});
+  save(); render();
+}
 
 /* Timer */
 function showClock(){$('clock').textContent=pad(Math.floor(left/60))+':'+pad(left%60)}
 function setMode(m){if(run)return;mode=m;left=m*60;showClock();document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m))}
 function tick(){left=Math.max(0,Math.round((endAt-Date.now())/1000));showClock();
-  if(left<=0){clearInterval(tmr);run=false;beep();const amt=mode==15?75:150;
-   addRecord($('subj').value,mode,amt,mode==15?'微型保底（計時）':'番茄鐘（計時）');toast('🎉 完成！+NT$ '+amt+' 已入帳');left=mode*60;showClock()}}
+  if(left<=0){
+    clearInterval(tmr);run=false;beep();
+    const amt = mode; // 1 分鐘 = 1 金幣
+    addRecord($('subj').value, mode, amt, mode+' 分鐘專注計時');
+    toast('🎉 ['+getCur().name+'] 完成計時！+ '+amt+' 金幣已入帳');
+    left=mode*60;showClock();
+  }}
 $('tStart').onclick=()=>{if(run||left<=0)return;run=true;endAt=Date.now()+left*1000;tmr=setInterval(tick,250)};
 $('tPause').onclick=()=>{if(!run)return;clearInterval(tmr);run=false;tick()};
 $('tReset').onclick=()=>{clearInterval(tmr);run=false;left=mode*60;showClock()};
 document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
 
 /* Controls */
-$('quick').innerHTML=QUICK.map((q,i)=>`<button data-i="${i}">${q[0]}<b>${q[1]} 分鐘</b></button>`).join('');
-$('quick').onclick=e=>{const b=e.target.closest('button');if(!b)return;const q=QUICK[+b.dataset.i];setMode(q[1]);toast('已切換為 '+q[1]+' 分鐘計時');};
+$('quick').innerHTML=QUICK.map((q,i)=>`<button data-i="${i}">${q[0]}<b>${q[1]} 金幣</b></button>`).join('');
+$('quick').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const q=QUICK[+b.dataset.i];
+  setMode(q[1]);
+  toast('已切換為 '+q[1]+' 分鐘計時');
+};
+
+// 玩家切換按鈕事件
+$('btnP1').onclick=()=>{ D.cur='p1'; updateSwitcherUI(); render(); };
+$('btnP2').onclick=()=>{ D.cur='p2'; updateSwitcherUI(); render(); };
+
+function updateSwitcherUI(){
+  $('btnP1').className = 'player-btn ' + (D.cur==='p1'?'active-p1':'');
+  $('btnP2').className = 'player-btn ' + (D.cur==='p2'?'active-p2':'');
+  $('p1Tag').textContent = D.cur==='p1'?'操作中':'等待中';
+  $('p2Tag').textContent = D.cur==='p2'?'操作中':'等待中';
+  $('curPlayerName').textContent = getCur().name;
+  $('curPlayerName2').textContent = getCur().name;
+}
+
 const opts=SUBJ.map(s=>`<option>${s}</option>`).join('');
 $('subj').innerHTML=opts;$('fSubj').innerHTML='<option value="">全部科目</option>'+opts;
 $('fDate').onchange=$('fSubj').onchange=renderHist;
 $('fClear').onclick=()=>{$('fDate').value='';$('fSubj').value='';renderHist()};
-$('hist').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;S.records=S.records.filter(r=>r.id!==b.dataset.del);save();render();toast('已刪除紀錄')};
+$('hist').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;getCur().records=getCur().records.filter(r=>r.id!==b.dataset.del);save();render();toast('已刪除紀錄')};
 
 /* Store */
 $('rAdd').onclick=()=>{const n=$('rName').value.trim(),c=+$('rCost').value;if(!n||!(c>0)){toast('請輸入名稱與金幣');return}
-  S.rewards.push({id:uid(),name:n,cost:c});save();$('rName').value=$('rCost').value='';render();toast('已新增獎勵卡片')};
+  getCur().rewards.push({id:uid(),name:n,cost:c});save();$('rName').value=$('rCost').value='';render();toast('已新增獎勵卡片')};
 $('store').onclick=e=>{const d=e.target.closest('[data-del]'),b=e.target.closest('[data-buy]');
-  if(d){S.rewards=S.rewards.filter(r=>r.id!==d.dataset.del);save();render();return}
-  if(b){const r=S.rewards.find(x=>x.id===b.dataset.buy);if(!r||balance()<r.cost)return;
-   S.redeems.push({id:uid(),date:today(),name:r.name,cost:r.cost,ts:Date.now()});save();render();toast('兌換成功：'+r.name)}};
+  const pData = getCur();
+  const bal = calcPlayerStats(pData).bal;
+  if(d){pData.rewards=pData.rewards.filter(r=>r.id!==d.dataset.del);save();render();return}
+  if(b){const r=pData.rewards.find(x=>x.id===b.dataset.buy);if(!r||bal<r.cost)return;
+   pData.redeems.push({id:uid(),date:today(),name:r.name,cost:r.cost,ts:Date.now()});save();render();toast('兌換成功：'+r.name)}};
 
 /* Render */
-function renderStats(){const dm=dayMap(),t=today(),bal=balance();
-  $('sBal').textContent=fmt(bal);$('sToday').textContent='+'+fmt((dm[t]||{amt:0}).amt);
-  const now=new Date(),dow=(now.getDay()+6)%7,ws=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow);
-  const wk=S.records.filter(r=>r.date>=ymd(ws)).reduce((s,r)=>s+r.minutes,0);$('sWeek').textContent=(wk/60).toFixed(1)+' h';
+function renderPK(){
+  const s1 = calcPlayerStats(D.p1), s2 = calcPlayerStats(D.p2);
+  $('p1Bal').textContent = fmt(s1.bal); $('p1Today').textContent = '+'+fmt(s1.todayAmt); $('p1Week').textContent = s1.wkHours+'h';
+  $('p2Bal').textContent = fmt(s2.bal); $('p2Today').textContent = '+'+fmt(s2.todayAmt); $('p2Week').textContent = s2.wkHours+'h';
+}
+
+function renderStats(){
+  const pData = getCur();
+  const dm = {}; pData.records.forEach(r=>{(dm[r.date]=dm[r.date]||{min:0,amt:0,n:0});dm[r.date].min+=r.minutes;dm[r.date].amt+=r.amount;dm[r.date].n++});
+  const t = today();
   let st=0,d=new Date();if(!(dm[ymd(d)]&&dm[ymd(d)].min>=15))d.setDate(d.getDate()-1);
   while(dm[ymd(d)]&&dm[ymd(d)].min>=15){st++;d.setDate(d.getDate()-1)}
   $('stStreak').textContent=st+' 天';
-  const days=S.records.length?Math.max(1,Math.round((new Date(t)-new Date(S.records.reduce((m,r)=>r.date<m?r.date:m,t)))/864e5)+1):0;
-  $('stAvg').textContent=(days?S.records.reduce((s,r)=>s+r.minutes,0)/60/days:0).toFixed(2)+' h';
-  const td=dm[t]||{min:0,n:0};$('stDay').textContent=(td.min/60).toFixed(1)+' h';$('stCnt').textContent=td.n}
-function renderHist(){const fd=$('fDate').value,fs=$('fSubj').value;
-  const L=S.records.filter(r=>(!fd||r.date===fd)&&(!fs||r.subject===fs)).sort((a,b)=>b.ts-a.ts);
+  const days=pData.records.length?Math.max(1,Math.round((new Date(t)-new Date(pData.records.reduce((m,r)=>r.date<m?r.date:m,t)))/864e5)+1):0;
+  $('stAvg').textContent=(days?pData.records.reduce((s,r)=>s+r.minutes,0)/60/days:0).toFixed(2)+' h';
+  const td=dm[t]||{min:0,n:0};$('stDay').textContent=(td.min/60).toFixed(1)+' h';$('stCnt').textContent=td.n;
+}
+
+function renderHist(){
+  const pData = getCur();
+  const fd=$('fDate').value,fs=$('fSubj').value;
+  const L=pData.records.filter(r=>(!fd||r.date===fd)&&(!fs||r.subject===fs)).sort((a,b)=>b.ts-a.ts);
   $('hist').innerHTML=L.slice(0,150).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.subject)}</td><td>${esc(r.label||'')}</td><td class="mono">${r.minutes}</td><td class="mono grn">+${fmt(r.amount)}</td><td><button data-del="${r.id}" title="刪除">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">尚無紀錄</td></tr>';
   const sm={};L.forEach(r=>sm[r.subject]=(sm[r.subject]||0)+r.minutes);const mx=Math.max(1,...Object.values(sm));
   $('dist').innerHTML=Object.entries(sm).map(([k,v])=>`<div><span>${esc(k)}</span><i style="width:${v/mx*60}%"></i><b class="mono">${(v/60).toFixed(1)}h</b></div>`).join('')}
-function renderStore(){const b=balance();
-  $('store').innerHTML=S.rewards.map(r=>`<div class="item"><button class="x" data-del="${r.id}" title="刪除">✕</button><b>${esc(r.name)}</b><p>犒賞自己，放鬆一下</p><button data-buy="${r.id}" class="${b>=r.cost?'amb':''}" ${b>=r.cost?'':'disabled'}>🪙 ${fmt(r.cost)} 兌換</button></div>`).join('')||'<p class="muted">尚無獎勵卡片</p>';
-  $('rHist').innerHTML=S.redeems.slice().reverse().slice(0,30).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.name)}</td><td class="mono red">−${fmt(r.cost)}</td></tr>`).join('')||'<tr><td class="muted">尚無兌換</td></tr>'}
-function renderCharts(){if(!window.Chart)return;const dm=dayMap(),lab=[],h=[],cum=[],cl=[];
+
+function renderStore(){
+  const pData = getCur();
+  const bal = calcPlayerStats(pData).bal;
+  $('store').innerHTML=pData.rewards.map(r=>`<div class="item"><button class="x" data-del="${r.id}" title="刪除">✕</button><b>${esc(r.name)}</b><p>犒賞自己，放鬆一下</p><button data-buy="${r.id}" class="${bal>=r.cost?'amb':''}" ${bal>=r.cost?'':'disabled'}>🪙 ${fmt(r.cost)} 兌換</button></div>`).join('')||'<p class="muted">尚無獎勵卡片</p>';
+  $('rHist').innerHTML=pData.redeems.slice().reverse().slice(0,30).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.name)}</td><td class="mono red">−${fmt(r.cost)}</td></tr>`).join('')||'<tr><td class="muted">尚無兌換</td></tr>'}
+
+function renderCharts(){
+  if(!window.Chart)return;
+  const pData = getCur();
+  const dm = {}; pData.records.forEach(r=>{(dm[r.date]=dm[r.date]||{min:0,amt:0});dm[r.date].min+=r.minutes;dm[r.date].amt+=r.amount});
+  const lab=[],h=[],cum=[],cl=[];
   let base=0;const start=new Date();start.setDate(start.getDate()-29);const s0=ymd(start);
-  S.records.forEach(r=>{if(r.date<s0)base+=r.amount});let run=base;
+  pData.records.forEach(r=>{if(r.date<s0)base+=r.amount});let run=base;
   for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=ymd(d);run+=(dm[k]||{amt:0}).amt;cl.push(k.slice(5));cum.push(run);
    if(i<14){lab.push(k.slice(5));h.push(+(((dm[k]||{min:0}).min)/60).toFixed(2))}}
   const opt={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8a9bb0'},grid:{color:'#223040'}},y:{beginAtZero:true,ticks:{color:'#8a9bb0'},grid:{color:'#223040'}}}};
   const mk=(id,cfg)=>{if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg)};
-  mk('c1',{type:'bar',data:{labels:lab,datasets:[{data:h,backgroundColor:'#10d98a',borderRadius:4}]},options:opt});
+  mk('c1',{type:'bar',data:{labels:lab,datasets:[{data:h,backgroundColor:D.cur==='p1'?'#3b82f6':'#ec4899',borderRadius:4}]},options:opt});
   mk('c2',{type:'line',data:{labels:cl,datasets:[{data:cum,borderColor:'#f5b83d',backgroundColor:'rgba(245,184,61,.15)',fill:true,tension:.3,pointRadius:2}]},options:opt})}
-function render(){renderStats();renderHist();renderStore();renderCharts()}
+
+function render(){
+  updateSwitcherUI();
+  renderPK();
+  renderStats();
+  renderHist();
+  renderStore();
+  renderCharts();
+}
 
 /* Data */
 function dl(n,t,m){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}catch(e){}}
-$('eJson').onclick=()=>{const t=JSON.stringify(S,null,2);$('box').value=t;dl('kftb-backup.json',t,'application/json');toast('JSON 已產生，可複製保存')};
-$('eCsv').onclick=()=>{const t='date,subject,label,minutes,amount\n'+S.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  $('box').value=t;dl('kftb-records.csv',t,'text/csv');toast('CSV 已產生，可複製保存')};
-$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){try{document.execCommand('copy')}catch(_){}}toast('已複製')};
-function imp(t){try{const o=JSON.parse(t);if(!o||!Array.isArray(o.records)||!Array.isArray(o.redeems)||!Array.isArray(o.rewards))throw 0;
-  S={records:o.records,redeems:o.redeems,rewards:o.rewards};save();render();toast('匯入完成，資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
+$('eJson').onclick=()=>{const t=JSON.stringify(D,null,2);$('box').value=t;dl('kftb-dual-backup.json',t,'application/json');toast('JSON 已產生')};
+$('eCsv').onclick=()=>{
+  const pData = getCur();
+  const t='date,subject,label,minutes,amount\n'+pData.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  $('box').value=t;dl('kftb-'+D.cur+'-records.csv',t,'text/csv');toast('CSV 已產生')};
+$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){}toast('已複製')};
+function imp(t){try{const o=JSON.parse(t);if(!o||!o.p1||!o.p2)throw 0;
+  D=o;save();render();toast('雙人資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
 $('iBtn').onclick=()=>imp($('box').value);
 $('iFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>imp(r.result);r.readAsText(f);e.target.value=''};
 
