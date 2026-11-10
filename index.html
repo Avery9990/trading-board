@@ -16,14 +16,12 @@ h1{font-size:18px;margin:0;letter-spacing:.5px}h1 span{color:var(--g)}
 h2{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mut);margin:0 0 12px;font-weight:600}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.35);transition:border-color .2s,transform .2s}
 .card:hover{border-color:#2f4358}
-.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px}
 .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-bottom:12px}
 @media(max-width:420px){.g2{grid-template-columns:1fr}}
 .lbl{font-size:12px;color:var(--mut)}
 .num{font:700 28px ui-monospace,Menlo,monospace;margin-top:4px}
 .gold{color:var(--a)}.grn{color:var(--g)}.red{color:var(--r)}
-.bar{height:10px;background:var(--card2);border-radius:6px;overflow:hidden;margin:10px 0 6px}
-.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--g),var(--a));transition:width .6s}
 input,select,button{font:inherit;color:var(--tx);background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
 input:focus,select:focus{outline:2px solid var(--g);outline-offset:-1px}
 button{cursor:pointer;transition:all .15s}
@@ -62,59 +60,56 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 <div class="wrap">
 <header><h1>📈 KNOWLEDGE <span>FUTURES</span> TRADING BOARD</h1><div class="tick" id="clk"></div></header>
 
-<section class="g4">
- <div class="card"><div class="lbl">可用知識金幣 · Available Balance</div><div class="num gold" id="sBal">0</div></div>
- <div class="card"><div class="lbl">今日收益 · Today’s Earnings</div><div class="num grn" id="sToday">0</div></div>
- <div class="card"><div class="lbl">本週累積時數 · Weekly Hours</div><div class="num" id="sWeek">0</div></div>
- <div class="card"><div class="lbl">🇦🇺 澳洲圓夢基金達成率</div><div class="num gold" id="sFund">0%</div>
-  <div class="bar"><i id="fBar"></i></div><div class="muted" id="fTxt"></div>
-  <div class="row" style="margin-top:8px"><input class="grow" id="goalIn" type="number" min="1" placeholder="目標金額 NT$"><button id="goalBtn">設定目標</button></div></div>
+<section class="g3">
+  <div class="card"><div class="lbl">可用知識金幣 · Available Balance</div><div class="num gold" id="sBal">0</div></div>
+  <div class="card"><div class="lbl">今日收益 · Today’s Earnings</div><div class="num grn" id="sToday">0</div></div>
+  <div class="card"><div class="lbl">本週累積時數 · Weekly Hours</div><div class="num" id="sWeek">0</div></div>
 </section>
 
 <section class="g2">
- <div class="card"><h2>專注計時 · Focus Timer</h2>
-  <div class="row seg" id="modes"><button data-m="15" class="on">15 分鐘微型保底</button><button data-m="25">25 分鐘番茄鐘</button></div>
-  <div class="clock" id="clock">15:00</div>
-  <div class="row"><select class="grow" id="subj"></select><button class="pri" id="tStart">開始</button><button id="tPause">暫停</button><button id="tReset">重置</button></div>
-  <p class="muted">計時完成會播放提示音並自動入帳。</p>
-  <h2 style="margin-top:14px">快速記帳 · Quick Deposit</h2>
-  <div class="qgrid" id="quick"></div>
- </div>
- <div class="card"><h2>知識收益兌換商城 · Reward Store</h2>
-  <div class="store" id="store"></div>
-  <div class="row" style="margin-top:12px"><input class="grow" id="rName" placeholder="獎勵名稱"><input id="rCost" type="number" min="1" placeholder="金幣" style="width:90px"><button id="rAdd" class="amb">新增</button></div>
-  <h2 style="margin:14px 0 6px">兌換履歷</h2><div class="scroll" style="max-height:130px"><table style="min-width:0"><tbody id="rHist"></tbody></table></div>
- </div>
+  <div class="card"><h2>專注計時 · Focus Timer</h2>
+    <div class="row seg" id="modes"><button data-m="15" class="on">15 分鐘微型保底</button><button data-m="25">25 分鐘番茄鐘</button></div>
+    <div class="clock" id="clock">15:00</div>
+    <div class="row"><select class="grow" id="subj"></select><button class="pri" id="tStart">開始</button><button id="tPause">暫停</button><button id="tReset">重置</button></div>
+    <p class="muted">計時完成會播放提示音並自動入帳。</p>
+    <h2 style="margin-top:14px">快速記帳 · Quick Deposit</h2>
+    <div class="qgrid" id="quick"></div>
+  </div>
+  <div class="card"><h2>知識收益兌換商城 · Reward Store</h2>
+    <div class="store" id="store"></div>
+    <div class="row" style="margin-top:12px"><input class="grow" id="rName" placeholder="獎勵名稱"><input id="rCost" type="number" min="1" placeholder="金幣" style="width:90px"><button id="rAdd" class="amb">新增</button></div>
+    <h2 style="margin:14px 0 6px">兌換履歷</h2><div class="scroll" style="max-height:130px"><table style="min-width:0"><tbody id="rHist"></tbody></table></div>
+  </div>
 </section>
 
 <section class="card" style="margin-bottom:12px"><h2>每日學習紀錄 · Daily Logger</h2>
- <div class="stats">
-  <div><span class="lbl">連續達標天數</span><b class="grn" id="stStreak">0</b></div>
-  <div><span class="lbl">日平均時數</span><b id="stAvg">0</b></div>
-  <div><span class="lbl">今日時數</span><b id="stDay">0</b></div>
-  <div><span class="lbl">今日微進度次數</span><b id="stCnt">0</b></div>
- </div>
- <div class="row"><input type="date" id="fDate"><select id="fSubj"></select><button id="fClear">清除篩選</button><span class="muted">每日 ≥ 15 分鐘即達標</span></div>
- <div class="dist" id="dist"></div>
- <div class="scroll"><table><thead><tr><th>日期</th><th>科目</th><th>項目</th><th>分鐘</th><th>收益</th><th></th></tr></thead><tbody id="hist"></tbody></table></div>
+  <div class="stats">
+    <div><span class="lbl">連續達標天數</span><b class="grn" id="stStreak">0</b></div>
+    <div><span class="lbl">日平均時數</span><b id="stAvg">0</b></div>
+    <div><span class="lbl">今日時數</span><b id="stDay">0</b></div>
+    <div><span class="lbl">今日微進度次數</span><b id="stCnt">0</b></div>
+  </div>
+  <div class="row"><input type="date" id="fDate"><select id="fSubj"></select><button id="fClear">清除篩選</button><span class="muted">每日 ≥ 15 分鐘即達標</span></div>
+  <div class="dist" id="dist"></div>
+  <div class="scroll"><thead><tr><th>日期</th><th>科目</th><th>項目</th><th>分鐘</th><th>收益</th><th></th></tr></thead><tbody id="hist"></tbody></table></div>
 </section>
 
 <section class="g2">
- <div class="card"><h2>每日讀書時數 Trend（近 14 天）</h2><div class="cv"><canvas id="c1"></canvas></div></div>
- <div class="card"><h2>累積收益趨勢（近 30 天）</h2><div class="cv"><canvas id="c2"></canvas></div></div>
+  <div class="card"><h2>每日讀書時數 Trend（近 14 天）</h2><div class="cv"><canvas id="c1"></canvas></div></div>
+  <div class="card"><h2>累積收益趨勢（近 30 天）</h2><div class="cv"><canvas id="c2"></canvas></div></div>
 </section>
 
 <section class="card"><h2>資料管理 · Data Management</h2>
- <div class="row"><button id="eJson">匯出 JSON</button><button id="eCsv">匯出 CSV</button><label class="row" style="gap:6px"><span class="muted">匯入 JSON：</span><input type="file" id="iFile" accept=".json,application/json"></label></div>
- <textarea id="box" placeholder="匯出內容會顯示在此（可複製）；也可貼上 JSON 後按「匯入」復原。"></textarea>
- <div class="row" style="margin-top:8px"><button id="copyBtn">複製</button><button id="iBtn" class="amb">匯入貼上的 JSON</button></div>
+  <div class="row"><button id="eJson">匯出 JSON</button><button id="eCsv">匯出 CSV</button><label class="row" style="gap:6px"><span class="muted">匯入 JSON：</span><input type="file" id="iFile" accept=".json,application/json"></label></div>
+  <textarea id="box" placeholder="匯出內容會顯示在此（可複製）；也可貼上 JSON 後按「匯入」復原。"></textarea>
+  <div class="row" style="margin-top:8px"><button id="copyBtn">複製</button><button id="iBtn" class="amb">匯入貼上的 JSON</button></div>
 </section>
 </div>
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-const KEY='kftb.v1', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
+const KEY='kftb.v2', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
 const QUICK=[['15 分鐘微保底',15,15],['25 分鐘番茄鐘',25,25],['30分鐘番茄鐘',30,30],['45分鐘番茄鐘',45,45],['60分鐘番茄鐘',60,60]];
 let S, mode=15, left=900, run=false, endAt=0, tmr=null, charts={};
 const $=id=>document.getElementById(id);
@@ -124,13 +119,13 @@ const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const today=()=>ymd(new Date());
 const fmt=n=>Number(n).toLocaleString('en-US');
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-function defs(){return{goal:10000,records:[],redeems:[],rewards:[
- {id:'r1',name:'30 分鐘看動漫 / 30 分鐘滑手機',cost:300},
- {id:'r2',name:'吃零食 / Steam 遊戲(星露谷3天)',cost:1000},
- {id:'r3',name:'對方做一件我希望的事情 / 出門吃一頓150以下的飯',cost:2000},
- {id:'r4',name:'出門玩1天',cost:5000,fund:true}]}}
+function defs(){return{records:[],redeems:[],rewards:[
+  {id:'r1',name:'30 分鐘看動漫 / 30 分鐘滑手機',cost:300},
+  {id:'r2',name:'吃零食 / Steam 遊戲(星露谷3天)',cost:1000},
+  {id:'r3',name:'對方做一件我希望的事情 / 出門吃一頓150以下的飯',cost:2000}
+]}}
 function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
- if(!S||!Array.isArray(S.records))S=defs();}
+  if(!S||!Array.isArray(S.records))S=defs();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach((d,i)=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=i==2?1046:784;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.2,a.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d+.22);o.start(a.currentTime+d);o.stop(a.currentTime+d+.25)})}catch(e){}}
@@ -138,86 +133,29 @@ function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)
 const earned=()=>S.records.reduce((s,r)=>s+r.amount,0);
 const spent=()=>S.redeems.reduce((s,r)=>s+r.cost,0);
 const balance=()=>earned()-spent();
-const fundSaved=()=>S.redeems.filter(r=>r.fund).reduce((s,r)=>s+r.cost,0);
 function dayMap(){const m={};S.records.forEach(r=>{(m[r.date]=m[r.date]||{min:0,amt:0,n:0});m[r.date].min+=r.minutes;m[r.date].amt+=r.amount;m[r.date].n++});return m}
 
 function addRecord(subject,minutes,amount,label){
- S.records.push({id:uid(),date:today(),subject,minutes,amount,label,ts:Date.now()});save();render();}
+  S.records.push({id:uid(),date:today(),subject,minutes,amount,label,ts:Date.now()});save();render();}
 
 /* Timer */
 function showClock(){$('clock').textContent=pad(Math.floor(left/60))+':'+pad(left%60)}
 function setMode(m){if(run)return;mode=m;left=m*60;showClock();document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m))}
 function tick(){left=Math.max(0,Math.round((endAt-Date.now())/1000));showClock();
- if(left<=0){clearInterval(tmr);run=false;beep();const amt=mode==15?75:150;
-  addRecord($('subj').value,mode,amt,mode==15?'微型保底（計時）':'番茄鐘（計時）');toast('🎉 完成！+NT$ '+amt+' 已入帳');left=mode*60;showClock()}}
+  if(left<=0){clearInterval(tmr);run=false;beep();const amt=mode==15?75:150;
+   addRecord($('subj').value,mode,amt,mode==15?'微型保底（計時）':'番茄鐘（計時）');toast('🎉 完成！+NT$ '+amt+' 已入帳');left=mode*60;showClock()}}
 $('tStart').onclick=()=>{if(run||left<=0)return;run=true;endAt=Date.now()+left*1000;tmr=setInterval(tick,250)};
-$('tPause').onclick=()=>{if(!run)return;clearInterval(tmr);run=false;tick()};
-$('tReset').onclick=()=>{clearInterval(tmr);run=false;left=mode*60;showClock()};
+$('tPause').onclick=()=>{if(!run)return;clearInterval(tmr);run=false;tick()};$('tReset').onclick=()=>{clearInterval(tmr);run=false;left=mode*60;showClock()};
 document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
 
 /* Controls */
-$('goalBtn').onclick=()=>{const v=+$('goalIn').value;if(v>0){S.goal=v;save();render();toast('目標已更新為 NT$ '+fmt(v));$('goalIn').value=''}};
 $('quick').innerHTML=QUICK.map((q,i)=>`<button data-i="${i}">${q[0]}<b>+NT$ ${fmt(q[2])}</b></button>`).join('');
 $('quick').onclick=e=>{const b=e.target.closest('button');if(!b)return;const q=QUICK[+b.dataset.i];addRecord($('subj').value,q[1],q[2],q[0]);toast('+NT$ '+fmt(q[2])+' 已入帳')};
 const opts=SUBJ.map(s=>`<option>${s}</option>`).join('');
 $('subj').innerHTML=opts;$('fSubj').innerHTML='<option value="">全部科目</option>'+opts;
 $('fDate').onchange=$('fSubj').onchange=renderHist;
-$('fClear').onclick=()=>{$('fDate').value='';$('fSubj').value='';renderHist()};
-$('hist').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;S.records=S.records.filter(r=>r.id!==b.dataset.del);save();render();toast('已刪除紀錄')};
+$('fClear').onclick=()=>{$('fDate').value='';$('fSubj').value='';renderHist()};$('hist').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;S.records=S.records.filter(r=>r.id!==b.dataset.del);save();render();toast('已刪除紀錄')};
 
 /* Store */
 $('rAdd').onclick=()=>{const n=$('rName').value.trim(),c=+$('rCost').value;if(!n||!(c>0)){toast('請輸入名稱與金幣');return}
- S.rewards.push({id:uid(),name:n,cost:c});save();$('rName').value=$('rCost').value='';render()};
-$('store').onclick=e=>{const d=e.target.closest('[data-del]'),b=e.target.closest('[data-buy]');
- if(d){S.rewards=S.rewards.filter(r=>r.id!==d.dataset.del);save();render();return}
- if(b){const r=S.rewards.find(x=>x.id===b.dataset.buy);if(!r||balance()<r.cost)return;
-  S.redeems.push({id:uid(),date:today(),name:r.name,cost:r.cost,fund:!!r.fund,ts:Date.now()});save();render();toast(r.fund?'已轉入圓夢基金 ✈️':'兌換成功：'+r.name)}};
-
-/* Render */
-function renderStats(){const dm=dayMap(),t=today(),bal=balance();
- $('sBal').textContent=fmt(bal);$('sToday').textContent='+'+fmt((dm[t]||{amt:0}).amt);
- const now=new Date(),dow=(now.getDay()+6)%7,ws=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow);
- const wk=S.records.filter(r=>r.date>=ymd(ws)).reduce((s,r)=>s+r.minutes,0);$('sWeek').textContent=(wk/60).toFixed(1)+' h';
- const f=fundSaved(),p=Math.min(100,f/S.goal*100);$('sFund').textContent=p.toFixed(1)+'%';$('fBar').style.width=p+'%';
- $('fTxt').textContent='NT$ '+fmt(f)+' / '+fmt(S.goal);
- let st=0,d=new Date();if(!(dm[ymd(d)]&&dm[ymd(d)].min>=15))d.setDate(d.getDate()-1);
- while(dm[ymd(d)]&&dm[ymd(d)].min>=15){st++;d.setDate(d.getDate()-1)}
- $('stStreak').textContent=st+' 天';
- const days=S.records.length?Math.max(1,Math.round((new Date(t)-new Date(S.records.reduce((m,r)=>r.date<m?r.date:m,t)))/864e5)+1):0;
- $('stAvg').textContent=(days?S.records.reduce((s,r)=>s+r.minutes,0)/60/days:0).toFixed(2)+' h';
- const td=dm[t]||{min:0,n:0};$('stDay').textContent=(td.min/60).toFixed(1)+' h';$('stCnt').textContent=td.n}
-function renderHist(){const fd=$('fDate').value,fs=$('fSubj').value;
- const L=S.records.filter(r=>(!fd||r.date===fd)&&(!fs||r.subject===fs)).sort((a,b)=>b.ts-a.ts);
- $('hist').innerHTML=L.slice(0,150).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.subject)}</td><td>${esc(r.label||'')}</td><td class="mono">${r.minutes}</td><td class="mono grn">+${fmt(r.amount)}</td><td><button data-del="${r.id}" title="刪除">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">尚無紀錄</td></tr>';
- const sm={};L.forEach(r=>sm[r.subject]=(sm[r.subject]||0)+r.minutes);const mx=Math.max(1,...Object.values(sm));
- $('dist').innerHTML=Object.entries(sm).map(([k,v])=>`<div><span>${esc(k)}</span><i style="width:${v/mx*60}%"></i><b class="mono">${(v/60).toFixed(1)}h</b></div>`).join('')}
-function renderStore(){const b=balance();
- $('store').innerHTML=S.rewards.map(r=>`<div class="item"><button class="x" data-del="${r.id}" title="刪除">✕</button><b>${esc(r.name)}</b><p>${r.fund?'存入後計入圓夢基金進度':'犒賞自己，放鬆一下'}</p><button data-buy="${r.id}" class="${b>=r.cost?'amb':''}" ${b>=r.cost?'':'disabled'}>🪙 ${fmt(r.cost)} 兌換</button></div>`).join('')||'<p class="muted">尚無獎勵卡片</p>';
- $('rHist').innerHTML=S.redeems.slice().reverse().slice(0,30).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.name)}</td><td class="mono red">−${fmt(r.cost)}</td></tr>`).join('')||'<tr><td class="muted">尚無兌換</td></tr>'}
-function renderCharts(){if(!window.Chart)return;const dm=dayMap(),lab=[],h=[],cum=[],cl=[];
- let base=0;const start=new Date();start.setDate(start.getDate()-29);const s0=ymd(start);
- S.records.forEach(r=>{if(r.date<s0)base+=r.amount});let run=base;
- for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=ymd(d);run+=(dm[k]||{amt:0}).amt;cl.push(k.slice(5));cum.push(run);
-  if(i<14){lab.push(k.slice(5));h.push(+(((dm[k]||{min:0}).min)/60).toFixed(2))}}
- const opt={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8a9bb0'},grid:{color:'#223040'}},y:{beginAtZero:true,ticks:{color:'#8a9bb0'},grid:{color:'#223040'}}}};
- const mk=(id,cfg)=>{if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg)};
- mk('c1',{type:'bar',data:{labels:lab,datasets:[{data:h,backgroundColor:'#10d98a',borderRadius:4}]},options:opt});
- mk('c2',{type:'line',data:{labels:cl,datasets:[{data:cum,borderColor:'#f5b83d',backgroundColor:'rgba(245,184,61,.15)',fill:true,tension:.3,pointRadius:2}]},options:opt})}
-function render(){renderStats();renderHist();renderStore();renderCharts()}
-
-/* Data */
-function dl(n,t,m){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}catch(e){}}
-$('eJson').onclick=()=>{const t=JSON.stringify(S,null,2);$('box').value=t;dl('kftb-backup.json',t,'application/json');toast('JSON 已產生，可複製保存')};
-$('eCsv').onclick=()=>{const t='date,subject,label,minutes,amount\n'+S.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
- $('box').value=t;dl('kftb-records.csv',t,'text/csv');toast('CSV 已產生，可複製保存')};
-$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){try{document.execCommand('copy')}catch(_){}}toast('已複製')};
-function imp(t){try{const o=JSON.parse(t);if(!o||!Array.isArray(o.records)||!Array.isArray(o.redeems)||!Array.isArray(o.rewards))throw 0;
- S={goal:+o.goal>0?+o.goal:10000,records:o.records,redeems:o.redeems,rewards:o.rewards};save();render();toast('匯入完成，資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
-$('iBtn').onclick=()=>imp($('box').value);
-$('iFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>imp(r.result);r.readAsText(f);e.target.value=''};
-
-setInterval(()=>{$('clk').textContent=new Date().toLocaleString('zh-TW',{hour12:false})},1000);
-load();showClock();render();
-</script>
-</body>
-</html>
+  S.rewards.push({id:uid(),name:n,cost:c});save
