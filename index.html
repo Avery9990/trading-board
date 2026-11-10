@@ -89,7 +89,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 <section class="pk-container">
   <div class="pk-card p1-card">
     <div class="pk-header">
-      <span class="pk-title" id="p1NameTitle">🟦 玩家 A</span>
+      <span class="pk-title" id="p1NameTitle">🟦 Wesley</span>
       <span class="muted" id="p1Tag">操作中</span>
     </div>
     <div class="pk-grid">
@@ -101,7 +101,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 
   <div class="pk-card p2-card">
     <div class="pk-header">
-      <span class="pk-title" id="p2NameTitle">🟥 玩家 B</span>
+      <span class="pk-title" id="p2NameTitle">🟥 Avery</span>
       <span class="muted" id="p2Tag">等待中</span>
     </div>
     <div class="pk-grid">
@@ -114,13 +114,13 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 
 <!-- 玩家切換選擇器 -->
 <div class="player-switcher">
-  <button class="player-btn active-p1" id="btnP1">切換至：🟦 玩家 A 打卡</button>
-  <button class="player-btn" id="btnP2">切換至：🟥 玩家 B 打卡</button>
+  <button class="player-btn active-p1" id="btnP1">切換至：🟦 Wesley 打卡</button>
+  <button class="player-btn" id="btnP2">切換至：🟥 Avery 打卡</button>
 </div>
 
 <section class="g2">
   <div class="card">
-    <h2>專注計時 · Focus Timer (<span id="curPlayerName">玩家 A</span>)</h2>
+    <h2>專注計時 · Focus Timer (<span id="curPlayerName">Wesley</span>)</h2>
     <div class="row seg" id="modes">
       <button data-m="15" class="on">15 分鐘</button>
       <button data-m="25">25 分鐘</button>
@@ -144,7 +144,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 </section>
 
 <section class="card" style="margin-bottom:12px">
-  <h2>個人學習紀錄 · Logger (<span id="curPlayerName2">玩家 A</span>)</h2>
+  <h2>個人學習紀錄 · Logger (<span id="curPlayerName2">Wesley</span>)</h2>
   <div class="stats">
     <div><span class="lbl">連續達標天數</span><b class="grn" id="stStreak">0</b></div>
     <div><span class="lbl">日平均時數</span><b id="stAvg">0</b></div>
@@ -187,8 +187,8 @@ if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON
 const KEY='kftb.dual.v1', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
 const QUICK=[['15 分鐘',15],['25 分鐘',25],['30 分鐘',30],['45 分鐘',45],['60 分鐘',60]];
 
-// 雙人資料結構
-let D = { cur: 'p1', p1: defData('玩家 A'), p2: defData('玩家 B') };
+// 雙人資料結構：預設角色名稱直接設定為 Wesley 與 Avery
+let D = { cur: 'p1', p1: defData('Wesley'), p2: defData('Avery') };
 let mode=15, left=900, run=false, endAt=0, tmr=null, charts={};
 
 const $=id=>document.getElementById(id);
@@ -242,6 +242,9 @@ async function initCloudSync(){
       const { data } = await supabaseClient.from('user_data').select('data').eq('id', USER_ID).single();
       if(data && data.data && data.data.p1 && data.data.p2){
         D = data.data;
+        // 強制校正舊快取中的角色名稱
+        if(D.p1) D.p1.name = 'Wesley';
+        if(D.p2) D.p2.name = 'Avery';
         saveLocalOnly();
         render();
         $('cloudStatus').textContent = '☁️ 雲端已連線';
