@@ -130,7 +130,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
     </div>
     <div class="clock" id="clock">15:00</div>
     <div class="row"><select class="grow" id="subj"></select><button class="pri" id="tStart">開始</button><button id="tPause">暫停</button><button id="tReset">重置</button></div>
-    <p class="muted">計時完成會自動發放金幣（1分鐘 = 1金幣）。</p>
+    <p class="muted">計時完成會自動發放金幣（1分鐘 = 1金幣），支援螢幕暗掉自動補算。</p>
     <h2 style="margin-top:14px">快速切換計時</h2>
     <div class="qgrid" id="quick"></div>
   </div>
@@ -187,7 +187,7 @@ if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON
 const KEY='kftb.dual.v1', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
 const QUICK=[['15 分鐘',15],['25 分鐘',25],['30 分鐘',30],['45 分鐘',45],['60 分鐘',60]];
 
-// 雙人資料結構：預設角色名稱直接設定為 Wesley 與 Avery
+// 雙人資料結構
 let D = { cur: 'p1', p1: defData('Wesley'), p2: defData('Avery') };
 let mode=15, left=900, run=false, endAt=0, tmr=null, charts={};
 
@@ -205,14 +205,13 @@ function defData(name){
     records: [],
     redeems: [],
     rewards: [
-      {id:'r1',name:'30 分鐘看動漫 / 30 分鐘滑手機',cost:100},
-      {id:'r2',name:'吃零食 / Steam 遊戲',cost:300},
-      {id:'r3',name:'對方做一件我希望的事情 / 出門吃一頓飯(150元)',cost:1000}
+      {id:'r1',name:'30 分鐘看動漫 / 30 分鐘滑手機',cost:30},
+      {id:'r2',name:'吃零食 / Steam 遊戲',cost:100},
+      {id:'r3',name:'對方做一件我希望的事情 / 出門吃一頓飯',cost:200}
     ]
   }
 }
 
-// 取得當前操作玩家資料
 function getCur(){ return D[D.cur]; }
 
 function loadLocal(){
@@ -242,7 +241,6 @@ async function initCloudSync(){
       const { data } = await supabaseClient.from('user_data').select('data').eq('id', USER_ID).single();
       if(data && data.data && data.data.p1 && data.data.p2){
         D = data.data;
-        // 強制校正舊快取中的角色名稱
         if(D.p1) D.p1.name = 'Wesley';
         if(D.p2) D.p2.name = 'Avery';
         saveLocalOnly();
@@ -278,20 +276,57 @@ function addRecord(subject,minutes,amount,label){
   save(); render();
 }
 
-/* Timer */
+/* 核心計時優化：支援背景時間戳計算，螢幕暗掉也能精準完成 */
 function showClock(){$('clock').textContent=pad(Math.floor(left/60))+':'+pad(left%60)}
 function setMode(m){if(run)return;mode=m;left=m*60;showClock();document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m))}
-function tick(){left=Math.max(0,Math.round((endAt-Date.now())/1000));showClock();
-  if(left<=0){
-    clearInterval(tmr);run=false;beep();
+
+function tick(){
+  if(!run) return;
+  left = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+  showClock();
+  
+  if(left <= 0){
+    clearInterval(tmr);
+    run = false;
+    beep();
     const amt = mode; // 1 分鐘 = 1 金幣
     addRecord($('subj').value, mode, amt, mode+' 分鐘專注計時');
     toast('🎉 ['+getCur().name+'] 完成計時！+ '+amt+' 金幣已入帳');
-    left=mode*60;showClock();
-  }}
-$('tStart').onclick=()=>{if(run||left<=0)return;run=true;endAt=Date.now()+left*1000;tmr=setInterval(tick,250)};
-$('tPause').onclick=()=>{if(!run)return;clearInterval(tmr);run=false;tick()};
-$('tReset').onclick=()=>{clearInterval(tmr);run=false;left=mode*60;showClock()};
+    left = mode * 60;
+    showClock();
+  }
+}
+
+// 監聽網頁從背景恢復可見的事件：一解鎖或切回畫面立刻校正時間
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && run) {
+    tick();
+  }
+});
+
+$('tStart').onclick = () => {
+  if(run || left <= 0) return;
+  run = true;
+  endAt = Date.now() + left * 1000; // 記錄精確的結束時間點
+  if(tmr) clearInterval(tmr);
+  tmr = setInterval(tick, 500);
+};
+
+$('tPause').onclick = () => {
+  if(!run) return;
+  clearInterval(tmr);
+  run = false;
+  left = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+  showClock();
+};
+
+$('tReset').onclick = () => {
+  clearInterval(tmr);
+  run = false;
+  left = mode * 60;
+  showClock();
+};
+
 document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
 
 /* Controls */
@@ -303,7 +338,6 @@ $('quick').onclick=e=>{
   toast('已切換為 '+q[1]+' 分鐘計時');
 };
 
-// 玩家切換按鈕事件
 $('btnP1').onclick=()=>{ D.cur='p1'; updateSwitcherUI(); render(); };
 $('btnP2').onclick=()=>{ D.cur='p2'; updateSwitcherUI(); render(); };
 
@@ -388,4 +422,22 @@ function render(){
   renderCharts();
 }
 
+/* Data */
+function dl(n,t,m){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}catch(e){}}
+$('eJson').onclick=()=>{const t=JSON.stringify(D,null,2);$('box').value=t;dl('kftb-dual-backup.json',t,'application/json');toast('JSON 已產生')};
+$('eCsv').onclick=()=>{
+  const pData = getCur();
+  const t='date,subject,label,minutes,amount\n'+pData.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  $('box').value=t;dl('kftb-'+D.cur+'-records.csv',t,'text/csv');toast('CSV 已產生')};
+$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){}toast('已複製')};
+function imp(t){try{const o=JSON.parse(t);if(!o||!o.p1||!o.p2)throw 0;
+  D=o;save();render();toast('雙人資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
+$('iBtn').onclick=()=>imp($('box').value);
+$('iFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>imp(r.result);r.readAsText(f);e.target.value=''};
 
+setInterval(()=>{$('clk').textContent=new Date().toLocaleString('zh-TW',{hour12:false})},1000);
+initCloudSync();
+showClock();
+</script>
+</body>
+</html>
