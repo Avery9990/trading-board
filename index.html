@@ -130,19 +130,9 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
     </div>
     <div class="clock" id="clock">15:00</div>
     <div class="row"><select class="grow" id="subj"></select><button class="pri" id="tStart">開始</button><button id="tPause">暫停</button><button id="tReset">重置</button></div>
-    <p class="muted">計時完成自動發放金幣（1分鐘 = 1金幣），支援螢幕暗掉自動補算。</p>
-    
-    <!-- 新增：手動補登與快速入帳區塊 -->
-    <h2 style="margin-top:16px">手動補登與快速入帳 · Manual Deposit</h2>
-    <div class="row" style="margin-bottom:8px">
-      <input type="date" id="manualDate" style="flex:1 1 130px">
-      <select id="manualSubj" style="flex:1 1 140px"></select>
-    </div>
-    <div class="row">
-      <input type="number" id="manualMins" min="1" placeholder="分鐘數 (例: 30)" style="flex:1 1 110px">
-      <input class="grow" id="manualLabel" placeholder="備註說明 (例: 補登下午讀書)">
-      <button id="manualAdd" class="pri">直接入帳</button>
-    </div>
+    <p class="muted">計時完成會自動發放金幣（1分鐘 = 1金幣），支援螢幕暗掉自動補算。</p>
+    <h2 style="margin-top:14px">快速切換計時</h2>
+    <div class="qgrid" id="quick"></div>
   </div>
 
   <div class="card">
@@ -281,26 +271,12 @@ function calcPlayerStats(pData){
   return { bal, todayAmt, wkHours: (wkMin/60).toFixed(1) };
 }
 
-// 支援自訂日期與備註的補登紀錄函式
-function addRecordCustom(dateStr, subject, minutes, amount, label){
-  getCur().records.push({
-    id: uid(),
-    date: dateStr || today(),
-    subject: subject,
-    minutes: minutes,
-    amount: amount,
-    label: label || (minutes+' 分鐘補登紀錄'),
-    ts: Date.now()
-  });
-  save(); 
-  render();
+function addRecord(subject,minutes,amount,label){
+  getCur().records.push({id:uid(),date:today(),subject,minutes,amount,label,ts:Date.now()});
+  save(); render();
 }
 
-function addRecord(subject, minutes, amount, label){
-  addRecordCustom(today(), subject, minutes, amount, label);
-}
-
-/* Timer */
+/* 核心計時優化：支援背景時間戳計算，螢幕暗掉也能精準完成 */
 function showClock(){$('clock').textContent=pad(Math.floor(left/60))+':'+pad(left%60)}
 function setMode(m){if(run)return;mode=m;left=m*60;showClock();document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m))}
 
@@ -321,6 +297,7 @@ function tick(){
   }
 }
 
+// 監聽網頁從背景恢復可見的事件：一解鎖或切回畫面立刻校正時間
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && run) {
     tick();
@@ -330,7 +307,7 @@ document.addEventListener("visibilitychange", () => {
 $('tStart').onclick = () => {
   if(run || left <= 0) return;
   run = true;
-  endAt = Date.now() + left * 1000;
+  endAt = Date.now() + left * 1000; // 記錄精確的結束時間點
   if(tmr) clearInterval(tmr);
   tmr = setInterval(tick, 500);
 };
@@ -352,36 +329,13 @@ $('tReset').onclick = () => {
 
 document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
 
-/* 快速切換計時模式按鈕 */
+/* Controls */
 $('quick').innerHTML=QUICK.map((q,i)=>`<button data-i="${i}">${q[0]}<b>${q[1]} 金幣</b></button>`).join('');
 $('quick').onclick=e=>{
   const b=e.target.closest('button');if(!b)return;
   const q=QUICK[+b.dataset.i];
   setMode(q[1]);
   toast('已切換為 '+q[1]+' 分鐘計時');
-};
-
-/* 手動補登按鈕事件 */
-$('manualDate').value = today();
-const manualOpts = SUBJ.map(s=>`<option>${s}</option>`).join('');
-$('manualSubj').innerHTML = manualOpts;
-
-$('manualAdd').onclick = () => {
-  const d = $('manualDate').value || today();
-  const subj = $('manualSubj').value;
-  const mins = parseInt($('manualMins').value);
-  const label = $('manualLabel').value.trim() || '手動補登';
-
-  if(!mins || mins <= 0){
-    toast('⚠️ 請輸入有效的學習分鐘數');
-    return;
-  }
-
-  const amt = mins; // 1 分鐘 = 1 金幣
-  addRecordCustom(d, subj, mins, amt, label);
-  $('manualMins').value = '';
-  $('manualLabel').value = '';
-  toast('✅ ['+getCur().name+'] 成功補登 '+mins+' 分鐘，+'+amt+' 金幣已入帳！');
 };
 
 $('btnP1').onclick=()=>{ D.cur='p1'; updateSwitcherUI(); render(); };
