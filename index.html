@@ -132,7 +132,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
     <div class="row"><select class="grow" id="subj"></select><button class="pri" id="tStart">開始</button><button id="tPause">暫停</button><button id="tReset">重置</button></div>
     <p class="muted">計時完成自動發放金幣（1分鐘 = 1金幣），支援螢幕暗掉自動補算。</p>
     
-    <!-- 新增：手動補登與快速入帳區塊 -->
+    <!-- 手動補登與快速入帳區塊 -->
     <h2 style="margin-top:16px">手動補登與快速入帳 · Manual Deposit</h2>
     <div class="row" style="margin-bottom:8px">
       <input type="date" id="manualDate" style="flex:1 1 130px">
@@ -194,6 +194,7 @@ if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON
   supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
+// 修正 KEY 名稱，確保能抓回你之前累積的雙人資料
 const KEY='kftb.dual.v1', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
 const QUICK=[['15 分鐘',15],['25 分鐘',25],['30 分鐘',30],['45 分鐘',45],['60 分鐘',60]];
 
@@ -281,7 +282,6 @@ function calcPlayerStats(pData){
   return { bal, todayAmt, wkHours: (wkMin/60).toFixed(1) };
 }
 
-// 支援自訂日期與備註的補登紀錄函式
 function addRecordCustom(dateStr, subject, minutes, amount, label){
   getCur().records.push({
     id: uid(),
@@ -313,7 +313,7 @@ function tick(){
     clearInterval(tmr);
     run = false;
     beep();
-    const amt = mode; // 1 分鐘 = 1 金幣
+    const amt = mode;
     addRecord($('subj').value, mode, amt, mode+' 分鐘專注計時');
     toast('🎉 ['+getCur().name+'] 完成計時！+ '+amt+' 金幣已入帳');
     left = mode * 60;
@@ -352,7 +352,7 @@ $('tReset').onclick = () => {
 
 document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
 
-/* 快速切換計時模式按鈕 */
+/* 快速切換計時模式 */
 $('quick').innerHTML=QUICK.map((q,i)=>`<button data-i="${i}">${q[0]}<b>${q[1]} 金幣</b></button>`).join('');
 $('quick').onclick=e=>{
   const b=e.target.closest('button');if(!b)return;
@@ -361,7 +361,7 @@ $('quick').onclick=e=>{
   toast('已切換為 '+q[1]+' 分鐘計時');
 };
 
-/* 手動補登按鈕事件 */
+/* 手動補登按鈕事件綁定 */
 $('manualDate').value = today();
 const manualOpts = SUBJ.map(s=>`<option>${s}</option>`).join('');
 $('manualSubj').innerHTML = manualOpts;
@@ -384,6 +384,7 @@ $('manualAdd').onclick = () => {
   toast('✅ ['+getCur().name+'] 成功補登 '+mins+' 分鐘，+'+amt+' 金幣已入帳！');
 };
 
+/* 玩家切換按鈕 */
 $('btnP1').onclick=()=>{ D.cur='p1'; updateSwitcherUI(); render(); };
 $('btnP2').onclick=()=>{ D.cur='p2'; updateSwitcherUI(); render(); };
 
@@ -462,6 +463,7 @@ function renderCharts(){
 function render(){
   updateSwitcherUI();
   renderPK();
+  previousStats=null; // 確保重繪
   renderStats();
   renderHist();
   renderStore();
@@ -475,7 +477,7 @@ $('eCsv').onclick=()=>{
   const pData = getCur();
   const t='date,subject,label,minutes,amount\n'+pData.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   $('box').value=t;dl('kftb-'+D.cur+'-records.csv',t,'text/csv');toast('CSV 已產生')};
-$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){}toast('已複製')};
+$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){}toast('E-Copied')};
 function imp(t){try{const o=JSON.parse(t);if(!o||!o.p1||!o.p2)throw 0;
   D=o;save();render();toast('雙人資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
 $('iBtn').onclick=()=>imp($('box').value);
