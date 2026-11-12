@@ -89,7 +89,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 <section class="pk-container">
   <div class="pk-card p1-card">
     <div class="pk-header">
-      <span class="pk-title" id="p1NameTitle">🟦 Wesley</span>
+      <span class="pk-title">🟦 Wesley</span>
       <span class="muted" id="p1Tag">操作中</span>
     </div>
     <div class="pk-grid">
@@ -101,7 +101,7 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 
   <div class="pk-card p2-card">
     <div class="pk-header">
-      <span class="pk-title" id="p2NameTitle">🟥 Avery</span>
+      <span class="pk-title">🟥 Avery</span>
       <span class="muted" id="p2Tag">等待中</span>
     </div>
     <div class="pk-grid">
@@ -114,23 +114,28 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 
 <!-- 玩家切換選擇器 -->
 <div class="player-switcher">
-  <button class="player-btn active-p1" id="btnP1">切換至：🟦 Wesley 打卡</button>
-  <button class="player-btn" id="btnP2">切換至：🟥 Avery 打卡</button>
+  <button class="player-btn active-p1" id="btnP1" type="button">切換至：🟦 Wesley 打卡</button>
+  <button class="player-btn" id="btnP2" type="button">切換至：🟥 Avery 打卡</button>
 </div>
 
 <section class="g2">
   <div class="card">
     <h2>專注計時 · Focus Timer (<span id="curPlayerName">Wesley</span>)</h2>
     <div class="row seg" id="modes">
-      <button data-m="15" class="on">15 分鐘</button>
-      <button data-m="25">25 分鐘</button>
-      <button data-m="30">30 分鐘</button>
-      <button data-m="45">45 分鐘</button>
-      <button data-m="60">60 分鐘</button>
+      <button data-m="15" class="on" type="button">15 分鐘</button>
+      <button data-m="25" type="button">25 分鐘</button>
+      <button data-m="30" type="button">30 分鐘</button>
+      <button data-m="45" type="button">45 分鐘</button>
+      <button data-m="60" type="button">60 分鐘</button>
     </div>
     <div class="clock" id="clock">15:00</div>
-    <div class="row"><select class="grow" id="subj"></select><button class="pri" id="tStart">開始</button><button id="tPause">暫停</button><button id="tReset">重置</button></div>
-    <p class="muted">計時完成自動發放金幣（1分鐘 = 1金幣），支援螢幕暗掉自動補算。</p>
+    <div class="row">
+      <select class="grow" id="subj"></select>
+      <button class="pri" id="tStart" type="button">開始</button>
+      <button id="tPause" type="button">暫停</button>
+      <button id="tReset" type="button">重置</button>
+    </div>
+    <p class="muted">計時完成自動發放金幣（1分鐘 = 1金幣）。</p>
     
     <!-- 手動補登與快速入帳區塊 -->
     <h2 style="margin-top:16px">手動補登與快速入帳 · Manual Deposit</h2>
@@ -141,15 +146,20 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
     <div class="row">
       <input type="number" id="manualMins" min="1" placeholder="分鐘數 (例: 30)" style="flex:1 1 110px">
       <input class="grow" id="manualLabel" placeholder="備註說明 (例: 補登下午讀書)">
-      <button id="manualAdd" class="pri">直接入帳</button>
+      <button id="manualAdd" class="pri" type="button">直接入帳</button>
     </div>
   </div>
 
   <div class="card">
     <h2>專屬兌換商城 · Reward Store</h2>
     <div class="store" id="store"></div>
-    <div class="row" style="margin-top:12px"><input class="grow" id="rName" placeholder="獎勵名稱"><input id="rCost" type="number" min="1" placeholder="金幣" style="width:90px"><button id="rAdd" class="amb">新增</button></div>
-    <h2 style="margin:14px 0 6px">兌換履歷</h2><div class="scroll" style="max-height:130px"><table style="min-width:0"><tbody id="rHist"></tbody></table></div>
+    <div class="row" style="margin-top:12px">
+      <input class="grow" id="rName" placeholder="獎勵名稱">
+      <input id="rCost" type="number" min="1" placeholder="金幣" style="width:90px">
+      <button id="rAdd" class="amb" type="button">新增</button>
+    </div>
+    <h2 style="margin:14px 0 6px">兌換履歷</h2>
+    <div class="scroll" style="max-height:130px"><table style="min-width:0"><tbody id="rHist"></tbody></table></div>
   </div>
 </section>
 
@@ -161,7 +171,12 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
     <div><span class="lbl">今日時數</span><b id="stDay">0</b></div>
     <div><span class="lbl">今日微進度次數</span><b id="stCnt">0</b></div>
   </div>
-  <div class="row"><input type="date" id="fDate"><select id="fSubj"></select><button id="fClear">清除篩選</button><span class="muted">每日 ≥ 15 分鐘即達標</span></div>
+  <div class="row">
+    <input type="date" id="fDate">
+    <select id="fSubj"></select>
+    <button id="fClear" type="button">清除篩選</button>
+    <span class="muted">每日 ≥ 15 分鐘即達標</span>
+  </div>
   <div class="dist" id="dist"></div>
   <div class="scroll"><table><thead><tr><th>日期</th><th>科目</th><th>項目</th><th>分鐘</th><th>收益</th><th></th></tr></thead><tbody id="hist"></tbody></table></div>
 </section>
@@ -172,9 +187,16 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 </section>
 
 <section class="card"><h2>資料管理 · Data Management</h2>
-  <div class="row"><button id="eJson">匯出 JSON</button><button id="eCsv">匯出 CSV</button><label class="row" style="gap:6px"><span class="muted">匯入 JSON：</span><input type="file" id="iFile" accept=".json,application/json"></label></div>
+  <div class="row">
+    <button id="eJson" type="button">匯出 JSON</button>
+    <button id="eCsv" type="button">匯出 CSV</button>
+    <label class="row" style="gap:6px"><span class="muted">匯入 JSON：</span><input type="file" id="iFile" accept=".json,application/json"></label>
+  </div>
   <textarea id="box" placeholder="匯出內容會顯示在此；也可貼上 JSON 後按「匯入」復原。"></textarea>
-  <div class="row" style="margin-top:8px"><button id="copyBtn">複製</button><button id="iBtn" class="amb">匯入貼上的 JSON</button></div>
+  <div class="row" style="margin-top:8px">
+    <button id="copyBtn" type="button">複製</button>
+    <button id="iBtn" class="amb" type="button">匯入貼上的 JSON</button>
+  </div>
 </section>
 </div>
 <div id="toast"></div>
@@ -184,31 +206,29 @@ textarea{width:100%;height:110px;background:var(--bg);color:var(--g);border:1px 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// Supabase 雲端設定
 const SUPABASE_URL = 'https://qbhoxxurkqozipbdgnqf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_WlIhTc6Lib0F_3G_AJCzIA_7nHCsOg6';
-const USER_ID = 'dual_trading_board_v1'; // 雙人專屬數據識別碼
+const USER_ID = 'dual_trading_board_v1';
 
 let supabaseClient = null;
 if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
   supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
-// 修正 KEY 名稱，確保能抓回你之前累積的雙人資料
-const KEY='kftb.dual.v1', SUBJ=['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
-const QUICK=[['15 分鐘',15],['25 分鐘',25],['30 分鐘',30],['45 分鐘',45],['60 分鐘',60]];
+const KEY = 'kftb.dual.v1';
+const SUBJ = ['Stata/Python','英文/IELTS','統計學/經濟學','出國準備','股市','TOEIC','其他'];
+const QUICK = [['15 分鐘',15],['25 分鐘',25],['30 分鐘',30],['45 分鐘',45],['60 分鐘',60]];
 
-// 雙人資料結構
 let D = { cur: 'p1', p1: defData('Wesley'), p2: defData('Avery') };
-let mode=15, left=900, run=false, endAt=0, tmr=null, charts={};
+let mode = 15, left = 900, run = false, endAt = 0, tmr = null, charts = {};
 
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const pad=n=>String(n).padStart(2,'0');
-const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-const today=()=>ymd(new Date());
-const fmt=n=>Number(n).toLocaleString('en-US');
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today = () => ymd(new Date());
+const fmt = n => Number(n).toLocaleString('en-US');
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
 function defData(name){
   return {
@@ -216,9 +236,9 @@ function defData(name){
     records: [],
     redeems: [],
     rewards: [
-      {id:'r1',name:'30 分鐘看動漫 / 30 分鐘滑手機',cost:30},
-      {id:'r2',name:'吃零食 / Steam 遊戲',cost:100},
-      {id:'r3',name:'對方做一件我希望的事情 / 出門吃一頓飯',cost:200}
+      {id:'r1', name:'30 分鐘看動漫 / 30 分鐘滑手機', cost:30},
+      {id:'r2', name:'吃零食 / Steam 遊戲', cost:100},
+      {id:'r3', name:'對方做一件我希望的事情 / 出門吃一頓飯', cost:200}
     ]
   }
 }
@@ -226,7 +246,10 @@ function defData(name){
 function getCur(){ return D[D.cur]; }
 
 function loadLocal(){
-  try{ const l = JSON.parse(localStorage.getItem(KEY)); if(l && l.p1 && l.p2) D = l; }catch(e){}
+  try{
+    const l = JSON.parse(localStorage.getItem(KEY));
+    if(l && l.p1 && l.p2) D = l;
+  }catch(e){}
 }
 
 async function save(){
@@ -254,7 +277,7 @@ async function initCloudSync(){
         D = data.data;
         if(D.p1) D.p1.name = 'Wesley';
         if(D.p2) D.p2.name = 'Avery';
-        saveLocalOnly();
+        try{ localStorage.setItem(KEY, JSON.stringify(D)); }catch(e){}
         render();
         $('cloudStatus').textContent = '☁️ 雲端已連線';
         $('cloudStatus').classList.add('online');
@@ -265,9 +288,27 @@ async function initCloudSync(){
   }
 }
 
-function saveLocalOnly(){ try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){} }
-function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
-function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach((d,i)=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=i==2?1046:784;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.2,a.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d+.22);o.start(a.currentTime+d);o.stop(a.currentTime+d+.25)})}catch(e){}}
+function toast(t){
+  const e = $('toast');
+  e.textContent = t;
+  e.classList.add('show');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(()=>e.classList.remove('show'), 2200);
+}
+
+function beep(){
+  try{
+    const a = new (window.AudioContext||window.webkitAudioContext)();
+    [0,.25,.5].forEach((d,i)=>{
+      const o = a.createOscillator(), g = a.createGain();
+      o.frequency.value = i==2 ? 1046 : 784;
+      o.connect(g); g.connect(a.destination);
+      g.gain.setValueAtTime(.2, a.currentTime+d);
+      g.gain.exponentialRampToValueAtTime(.001, a.currentTime+d+.22);
+      o.start(a.currentTime+d); o.stop(a.currentTime+d+.25);
+    });
+  }catch(e){}
+}
 
 function calcPlayerStats(pData){
   const earned = pData.records.reduce((s,r)=>s+r.amount,0);
@@ -289,10 +330,10 @@ function addRecordCustom(dateStr, subject, minutes, amount, label){
     subject: subject,
     minutes: minutes,
     amount: amount,
-    label: label || (minutes+' 分鐘補登紀錄'),
+    label: label || (minutes+' 分鐘專注計時'),
     ts: Date.now()
   });
-  save(); 
+  save();
   render();
 }
 
@@ -301,8 +342,17 @@ function addRecord(subject, minutes, amount, label){
 }
 
 /* Timer */
-function showClock(){$('clock').textContent=pad(Math.floor(left/60))+':'+pad(left%60)}
-function setMode(m){if(run)return;mode=m;left=m*60;showClock();document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',+b.dataset.m===m))}
+function showClock(){
+  $('clock').textContent = pad(Math.floor(left/60))+':'+pad(left%60);
+}
+
+function setMode(m){
+  if(run) return;
+  mode = m;
+  left = m * 60;
+  showClock();
+  document.querySelectorAll('#modes button').forEach(b => b.classList.toggle('on', +b.dataset.m === m));
+}
 
 function tick(){
   if(!run) return;
@@ -322,9 +372,7 @@ function tick(){
 }
 
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && run) {
-    tick();
-  }
+  if (!document.hidden && run) tick();
 });
 
 $('tStart').onclick = () => {
@@ -333,6 +381,7 @@ $('tStart').onclick = () => {
   endAt = Date.now() + left * 1000;
   if(tmr) clearInterval(tmr);
   tmr = setInterval(tick, 500);
+  toast('⏱️ 計時器已開始');
 };
 
 $('tPause').onclick = () => {
@@ -341,6 +390,7 @@ $('tPause').onclick = () => {
   run = false;
   left = Math.max(0, Math.round((endAt - Date.now()) / 1000));
   showClock();
+  toast('⏸️ 計時已暫停');
 };
 
 $('tReset').onclick = () => {
@@ -348,23 +398,26 @@ $('tReset').onclick = () => {
   run = false;
   left = mode * 60;
   showClock();
+  toast('🔄 計時已重置');
 };
 
-document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
+document.querySelectorAll('#modes button').forEach(b => {
+  b.onclick = () => setMode(+b.dataset.m);
+});
 
 /* 快速切換計時模式 */
-$('quick').innerHTML=QUICK.map((q,i)=>`<button data-i="${i}">${q[0]}<b>${q[1]} 金幣</b></button>`).join('');
-$('quick').onclick=e=>{
-  const b=e.target.closest('button');if(!b)return;
-  const q=QUICK[+b.dataset.i];
+$('quick').innerHTML = QUICK.map((q,i)=>`<button data-i="${i}" type="button">${q[0]}<b>${q[1]} 金幣</b></button>`).join('');
+$('quick').onclick = e => {
+  const b = e.target.closest('button');
+  if(!b) return;
+  const q = QUICK[+b.dataset.i];
   setMode(q[1]);
   toast('已切換為 '+q[1]+' 分鐘計時');
 };
 
-/* 手動補登按鈕事件綁定 */
+/* 手動補登事件 */
 $('manualDate').value = today();
-const manualOpts = SUBJ.map(s=>`<option>${s}</option>`).join('');
-$('manualSubj').innerHTML = manualOpts;
+$('manualSubj').innerHTML = SUBJ.map(s=>`<option>${s}</option>`).join('');
 
 $('manualAdd').onclick = () => {
   const d = $('manualDate').value || today();
@@ -377,113 +430,218 @@ $('manualAdd').onclick = () => {
     return;
   }
 
-  const amt = mins; // 1 分鐘 = 1 金幣
-  addRecordCustom(d, subj, mins, amt, label);
+  addRecordCustom(d, subj, mins, mins, label);
   $('manualMins').value = '';
   $('manualLabel').value = '';
-  toast('✅ ['+getCur().name+'] 成功補登 '+mins+' 分鐘，+'+amt+' 金幣已入帳！');
+  toast('✅ ['+getCur().name+'] 成功補登 '+mins+' 分鐘，+'+mins+' 金幣已入帳！');
 };
 
-/* 玩家切換按鈕 */
-$('btnP1').onclick=()=>{ D.cur='p1'; updateSwitcherUI(); render(); };
-$('btnP2').onclick=()=>{ D.cur='p2'; updateSwitcherUI(); render(); };
+/* 玩家切換 */
+$('btnP1').onclick = () => { D.cur = 'p1'; render(); };
+$('btnP2').onclick = () => { D.cur = 'p2'; render(); };
 
 function updateSwitcherUI(){
   $('btnP1').className = 'player-btn ' + (D.cur==='p1'?'active-p1':'');
   $('btnP2').className = 'player-btn ' + (D.cur==='p2'?'active-p2':'');
-  $('p1Tag').textContent = D.cur==='p1'?'操作中':'等待中';
-  $('p2Tag').textContent = D.cur==='p2'?'操作中':'等待中';
+  $('p1Tag').textContent = D.cur==='p1' ? '操作中' : '等待中';
+  $('p2Tag').textContent = D.cur==='p2' ? '操作中' : '等待中';
   $('curPlayerName').textContent = getCur().name;
   $('curPlayerName2').textContent = getCur().name;
 }
 
-const opts=SUBJ.map(s=>`<option>${s}</option>`).join('');
-$('subj').innerHTML=opts;$('fSubj').innerHTML='<option value="">全部科目</option>'+opts;
-$('fDate').onchange=$('fSubj').onchange=renderHist;
-$('fClear').onclick=()=>{$('fDate').value='';$('fSubj').value='';renderHist()};
-$('hist').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;getCur().records=getCur().records.filter(r=>r.id!==b.dataset.del);save();render();toast('已刪除紀錄')};
+const opts = SUBJ.map(s=>`<option>${s}</option>`).join('');
+$('subj').innerHTML = opts;
+$('fSubj').innerHTML = '<option value="">全部科目</option>' + opts;
+$('fDate').onchange = $('fSubj').onchange = renderHist;
+$('fClear').onclick = () => { $('fDate').value = ''; $('fSubj').value = ''; renderHist(); };
+$('hist').onclick = e => {
+  const b = e.target.closest('[data-del]');
+  if(!b) return;
+  getCur().records = getCur().records.filter(r => r.id !== b.dataset.del);
+  save();
+  render();
+  toast('已刪除紀錄');
+};
 
 /* Store */
-$('rAdd').onclick=()=>{const n=$('rName').value.trim(),c=+$('rCost').value;if(!n||!(c>0)){toast('請輸入名稱與金幣');return}
-  getCur().rewards.push({id:uid(),name:n,cost:c});save();$('rName').value=$('rCost').value='';render();toast('已新增獎勵卡片')};
-$('store').onclick=e=>{const d=e.target.closest('[data-del]'),b=e.target.closest('[data-buy]');
+$('rAdd').onclick = () => {
+  const n = $('rName').value.trim(), c = +$('rCost').value;
+  if(!n || !(c > 0)){ toast('請輸入名稱與金幣'); return; }
+  getCur().rewards.push({id: uid(), name: n, cost: c});
+  save();
+  $('rName').value = $('rCost').value = '';
+  render();
+  toast('已新增獎勵卡片');
+};
+
+$('store').onclick = e => {
+  const d = e.target.closest('[data-del]'), b = e.target.closest('[data-buy]');
   const pData = getCur();
   const bal = calcPlayerStats(pData).bal;
-  if(d){pData.rewards=pData.rewards.filter(r=>r.id!==d.dataset.del);save();render();return}
-  if(b){const r=pData.rewards.find(x=>x.id===b.dataset.buy);if(!r||bal<r.cost)return;
-   pData.redeems.push({id:uid(),date:today(),name:r.name,cost:r.cost,ts:Date.now()});save();render();toast('兌換成功：'+r.name)}};
+  if(d){
+    pData.rewards = pData.rewards.filter(r => r.id !== d.dataset.del);
+    save();
+    render();
+    return;
+  }
+  if(b){
+    const r = pData.rewards.find(x => x.id === b.dataset.buy);
+    if(!r || bal < r.cost) return;
+    pData.redeems.push({id: uid(), date: today(), name: r.name, cost: r.cost, ts: Date.now()});
+    save();
+    render();
+    toast('兌換成功：'+r.name);
+  }
+};
 
-/* Render */
+/* Render Functions */
 function renderPK(){
   const s1 = calcPlayerStats(D.p1), s2 = calcPlayerStats(D.p2);
-  $('p1Bal').textContent = fmt(s1.bal); $('p1Today').textContent = '+'+fmt(s1.todayAmt); $('p1Week').textContent = s1.wkHours+'h';
-  $('p2Bal').textContent = fmt(s2.bal); $('p2Today').textContent = '+'+fmt(s2.todayAmt); $('p2Week').textContent = s2.wkHours+'h';
+  $('p1Bal').textContent = fmt(s1.bal);
+  $('p1Today').textContent = '+'+fmt(s1.todayAmt);
+  $('p1Week').textContent = s1.wkHours+'h';
+
+  $('p2Bal').textContent = fmt(s2.bal);
+  $('p2Today').textContent = '+'+fmt(s2.todayAmt);
+  $('p2Week').textContent = s2.wkHours+'h';
 }
 
 function renderStats(){
   const pData = getCur();
-  const dm = {}; pData.records.forEach(r=>{(dm[r.date]=dm[r.date]||{min:0,amt:0,n:0});dm[r.date].min+=r.minutes;dm[r.date].amt+=r.amount;dm[r.date].n++});
+  const dm = {};
+  pData.records.forEach(r => {
+    dm[r.date] = dm[r.date] || {min:0, amt:0, n:0};
+    dm[r.date].min += r.minutes;
+    dm[r.date].amt += r.amount;
+    dm[r.date].n++;
+  });
   const t = today();
-  let st=0,d=new Date();if(!(dm[ymd(d)]&&dm[ymd(d)].min>=15))d.setDate(d.getDate()-1);
-  while(dm[ymd(d)]&&dm[ymd(d)].min>=15){st++;d.setDate(d.getDate()-1)}
-  $('stStreak').textContent=st+' 天';
-  const days=pData.records.length?Math.max(1,Math.round((new Date(t)-new Date(pData.records.reduce((m,r)=>r.date<m?r.date:m,t)))/864e5)+1):0;
-  $('stAvg').textContent=(days?pData.records.reduce((s,r)=>s+r.minutes,0)/60/days:0).toFixed(2)+' h';
-  const td=dm[t]||{min:0,n:0};$('stDay').textContent=(td.min/60).toFixed(1)+' h';$('stCnt').textContent=td.n;
+  let st = 0, d = new Date();
+  if(!(dm[ymd(d)] && dm[ymd(d)].min >= 15)) d.setDate(d.getDate()-1);
+  while(dm[ymd(d)] && dm[ymd(d)].min >= 15){
+    st++;
+    d.setDate(d.getDate()-1);
+  }
+  $('stStreak').textContent = st+' 天';
+  const days = pData.records.length ? Math.max(1, Math.round((new Date(t) - new Date(pData.records.reduce((m,r)=>r.date<m?r.date:m,t)))/864e5)+1) : 0;
+  $('stAvg').textContent = (days ? pData.records.reduce((s,r)=>s+r.minutes,0)/60/days : 0).toFixed(2)+' h';
+  const td = dm[t] || {min:0, n:0};
+  $('stDay').textContent = (td.min/60).toFixed(1)+' h';
+  $('stCnt').textContent = td.n;
 }
 
 function renderHist(){
   const pData = getCur();
-  const fd=$('fDate').value,fs=$('fSubj').value;
-  const L=pData.records.filter(r=>(!fd||r.date===fd)&&(!fs||r.subject===fs)).sort((a,b)=>b.ts-a.ts);
-  $('hist').innerHTML=L.slice(0,150).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.subject)}</td><td>${esc(r.label||'')}</td><td class="mono">${r.minutes}</td><td class="mono grn">+${fmt(r.amount)}</td><td><button data-del="${r.id}" title="刪除">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">尚無紀錄</td></tr>';
-  const sm={};L.forEach(r=>sm[r.subject]=(sm[r.subject]||0)+r.minutes);const mx=Math.max(1,...Object.values(sm));
-  $('dist').innerHTML=Object.entries(sm).map(([k,v])=>`<div><span>${esc(k)}</span><i style="width:${v/mx*60}%"></i><b class="mono">${(v/60).toFixed(1)}h</b></div>`).join('')}
+  const fd = $('fDate').value, fs = $('fSubj').value;
+  const L = pData.records.filter(r => (!fd || r.date === fd) && (!fs || r.subject === fs)).sort((a,b)=>b.ts-a.ts);
+  $('hist').innerHTML = L.slice(0,150).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.subject)}</td><td>${esc(r.label||'')}</td><td class="mono">${r.minutes}</td><td class="mono grn">+${fmt(r.amount)}</td><td><button data-del="${r.id}" title="刪除" type="button">✕</button></td></tr>`).join('') || '<tr><td colspan="6" class="muted">尚無紀錄</td></tr>';
+  const sm = {};
+  L.forEach(r => sm[r.subject] = (sm[r.subject]||0) + r.minutes);
+  const mx = Math.max(1, ...Object.values(sm));
+  $('dist').innerHTML = Object.entries(sm).map(([k,v])=>`<div><span>${esc(k)}</span><i style="width:${v/mx*60}%"></i><b class="mono">${(v/60).toFixed(1)}h</b></div>`).join('');
+}
 
 function renderStore(){
   const pData = getCur();
   const bal = calcPlayerStats(pData).bal;
-  $('store').innerHTML=pData.rewards.map(r=>`<div class="item"><button class="x" data-del="${r.id}" title="刪除">✕</button><b>${esc(r.name)}</b><p>犒賞自己，放鬆一下</p><button data-buy="${r.id}" class="${bal>=r.cost?'amb':''}" ${bal>=r.cost?'':'disabled'}>🪙 ${fmt(r.cost)} 兌換</button></div>`).join('')||'<p class="muted">尚無獎勵卡片</p>';
-  $('rHist').innerHTML=pData.redeems.slice().reverse().slice(0,30).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.name)}</td><td class="mono red">−${fmt(r.cost)}</td></tr>`).join('')||'<tr><td class="muted">尚無兌換</td></tr>'}
+  $('store').innerHTML = pData.rewards.map(r=>`<div class="item"><button class="x" data-del="${r.id}" title="刪除" type="button">✕</button><b>${esc(r.name)}</b><p>犒賞自己，放鬆一下</p><button data-buy="${r.id}" class="${bal>=r.cost?'amb':''}" ${bal>=r.cost?'':'disabled'} type="button">🪙 ${fmt(r.cost)} 兌換</button></div>`).join('') || '<p class="muted">尚無獎勵卡片</p>';
+  $('rHist').innerHTML = pData.redeems.slice().reverse().slice(0,30).map(r=>`<tr><td class="mono">${r.date}</td><td>${esc(r.name)}</td><td class="mono red">−${fmt(r.cost)}</td></tr>`).join('') || '<tr><td class="muted">尚無兌換</td></tr>';
+}
 
 function renderCharts(){
-  if(!window.Chart)return;
+  if(!window.Chart) return;
   const pData = getCur();
-  const dm = {}; pData.records.forEach(r=>{(dm[r.date]=dm[r.date]||{min:0,amt:0});dm[r.date].min+=r.minutes;dm[r.date].amt+=r.amount});
-  const lab=[],h=[],cum=[],cl=[];
-  let base=0;const start=new Date();start.setDate(start.getDate()-29);const s0=ymd(start);
-  pData.records.forEach(r=>{if(r.date<s0)base+=r.amount});let run=base;
-  for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=ymd(d);run+=(dm[k]||{amt:0}).amt;cl.push(k.slice(5));cum.push(run);
-   if(i<14){lab.push(k.slice(5));h.push(+(((dm[k]||{min:0}).min)/60).toFixed(2))}}
-  const opt={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8a9bb0'},grid:{color:'#223040'}},y:{beginAtZero:true,ticks:{color:'#8a9bb0'},grid:{color:'#223040'}}}};
-  const mk=(id,cfg)=>{if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg)};
-  mk('c1',{type:'bar',data:{labels:lab,datasets:[{data:h,backgroundColor:D.cur==='p1'?'#3b82f6':'#ec4899',borderRadius:4}]},options:opt});
-  mk('c2',{type:'line',data:{labels:cl,datasets:[{data:cum,borderColor:'#f5b83d',backgroundColor:'rgba(245,184,61,.15)',fill:true,tension:.3,pointRadius:2}]},options:opt})}
+  const dm = {};
+  pData.records.forEach(r => {
+    dm[r.date] = dm[r.date] || {min:0, amt:0};
+    dm[r.date].min += r.minutes;
+    dm[r.date].amt += r.amount;
+  });
+  const lab = [], h = [], cum = [], cl = [];
+  let base = 0;
+  const start = new Date(); start.setDate(start.getDate()-29);
+  const s0 = ymd(start);
+  pData.records.forEach(r => { if(r.date < s0) base += r.amount; });
+  let run = base;
+  for(let i = 29; i >= 0; i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const k = ymd(d);
+    run += (dm[k] || {amt:0}).amt;
+    cl.push(k.slice(5));
+    cum.push(run);
+    if(i < 14){
+      lab.push(k.slice(5));
+      h.push(+(((dm[k]||{min:0}).min)/60).toFixed(2));
+    }
+  }
+  const opt = {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#8a9bb0'},grid:{color:'#223040'}}, y:{beginAtZero:true, ticks:{color:'#8a9bb0'}, grid:{color:'#223040'}}}};
+  const mk = (id, cfg) => {
+    if(charts[id]) charts[id].destroy();
+    charts[id] = new Chart($(id), cfg);
+  };
+  mk('c1', {type:'bar', data:{labels:lab, datasets:[{data:h, backgroundColor:D.cur==='p1'?'#3b82f6':'#ec4899', borderRadius:4}]}, options:opt});
+  mk('c2', {type:'line', data:{labels:cl, datasets:[{data:cum, borderColor:'#f5b83d', backgroundColor:'rgba(245,184,61,.15)', fill:true, tension:.3, pointRadius:2}]}, options:opt});
+}
 
 function render(){
   updateSwitcherUI();
   renderPK();
-  previousStats=null; // 確保重繪
   renderStats();
   renderHist();
   renderStore();
   renderCharts();
 }
 
-/* Data */
-function dl(n,t,m){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}catch(e){}}
-$('eJson').onclick=()=>{const t=JSON.stringify(D,null,2);$('box').value=t;dl('kftb-dual-backup.json',t,'application/json');toast('JSON 已產生')};
-$('eCsv').onclick=()=>{
-  const pData = getCur();
-  const t='date,subject,label,minutes,amount\n'+pData.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  $('box').value=t;dl('kftb-'+D.cur+'-records.csv',t,'text/csv');toast('CSV 已產生')};
-$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){}toast('E-Copied')};
-function imp(t){try{const o=JSON.parse(t);if(!o||!o.p1||!o.p2)throw 0;
-  D=o;save();render();toast('雙人資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
-$('iBtn').onclick=()=>imp($('box').value);
-$('iFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>imp(r.result);r.readAsText(f);e.target.value=''};
+/* Data Management */
+$('eJson').onclick = () => {
+  const t = JSON.stringify(D, null, 2);
+  $('box').value = t;
+  toast('JSON 已產生');
+};
 
-setInterval(()=>{$('clk').textContent=new Date().toLocaleString('zh-TW',{hour12:false})},1000);
+$('eCsv').onclick = () => {
+  const pData = getCur();
+  const t = 'date,subject,label,minutes,amount\n' + pData.records.map(r=>[r.date, r.subject, r.label||'', r.minutes, r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  $('box').value = t;
+  toast('CSV 已產生');
+};
+
+$('copyBtn').onclick = () => {
+  const b = $('box');
+  b.select();
+  try{ navigator.clipboard.writeText(b.value); }catch(e){}
+  toast('已複製');
+};
+
+function imp(t){
+  try{
+    const o = JSON.parse(t);
+    if(!o || !o.p1 || !o.p2) throw 0;
+    D = o;
+    if(D.p1) D.p1.name = 'Wesley';
+    if(D.p2) D.p2.name = 'Avery';
+    save();
+    render();
+    toast('資料已成功復原！');
+  }catch(e){
+    toast('匯入失敗：格式不正確');
+  }
+}
+
+$('iBtn').onclick = () => imp($('box').value);
+$('iFile').onchange = e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => imp(r.result);
+  r.readAsText(f);
+  e.target.value = '';
+};
+
+setInterval(() => {
+  $('clk').textContent = new Date().toLocaleString('zh-TW', {hour12:false});
+}, 1000);
+
 initCloudSync();
 showClock();
 </script>
