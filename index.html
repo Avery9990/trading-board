@@ -388,22 +388,4 @@ function render(){
   renderCharts();
 }
 
-/* Data */
-function dl(n,t,m){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()}catch(e){}}
-$('eJson').onclick=()=>{const t=JSON.stringify(D,null,2);$('box').value=t;dl('kftb-dual-backup.json',t,'application/json');toast('JSON 已產生')};
-$('eCsv').onclick=()=>{
-  const pData = getCur();
-  const t='date,subject,label,minutes,amount\n'+pData.records.map(r=>[r.date,r.subject,r.label||'',r.minutes,r.amount].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  $('box').value=t;dl('kftb-'+D.cur+'-records.csv',t,'text/csv');toast('CSV 已產生')};
-$('copyBtn').onclick=()=>{const b=$('box');b.select();try{navigator.clipboard.writeText(b.value)}catch(e){}toast('已複製')};
-function imp(t){try{const o=JSON.parse(t);if(!o||!o.p1||!o.p2)throw 0;
-  D=o;save();render();toast('雙人資料已復原')}catch(e){toast('匯入失敗：格式不正確')}}
-$('iBtn').onclick=()=>imp($('box').value);
-$('iFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>imp(r.result);r.readAsText(f);e.target.value=''};
 
-setInterval(()=>{$('clk').textContent=new Date().toLocaleString('zh-TW',{hour12:false})},1000);
-initCloudSync();
-showClock();
-</script>
-</body>
-</html>
